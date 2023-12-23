@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +18,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static ru.yandex.practicum.filmorate.utils.DefaultData.*;
+import static ru.yandex.practicum.filmorate.utils.DefaultData.ENTITY_NOT_FOUND_ERROR;
+import static ru.yandex.practicum.filmorate.utils.DefaultData.ENTITY_PROCESSED_SUCCESSFUL;
 
 @RestController
 @Slf4j
@@ -34,14 +34,8 @@ public class UserController {
 
     @PostMapping("/users")
     public ResponseEntity<Object> createUser(@Valid @RequestBody User body) {
-        try {
-            validateUser(body);
-        } catch (ValidationException e) {
-            log.warn(e.getMessage());
-            return ResponseEntity.badRequest()
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(e.getMessage());
-        }
+        validateUser(body);
+
         users.put(body.getId(), body);
         log.debug(ENTITY_PROCESSED_SUCCESSFUL, body);
         return ResponseEntity.ok()
@@ -50,19 +44,13 @@ public class UserController {
     }
 
     @PutMapping("/users/{id}")
-    public ResponseEntity<Object> updateUser(@PathVariable Long id, @RequestBody User body) {
+    public ResponseEntity<Object> updateUser(@Valid @PathVariable Long id, @RequestBody User body) {
         if (!users.containsKey(id)) {
             log.warn(ENTITY_NOT_FOUND_ERROR);
             return ResponseEntity.notFound().build();
         }
-        try {
-            validateUser(body);
-        } catch (ValidationException e) {
-            log.warn(e.getMessage());
-            return ResponseEntity.badRequest()
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(e.getMessage());
-        }
+        validateUser(body);
+
         users.put(id, body);
         log.debug(ENTITY_PROCESSED_SUCCESSFUL, body);
         return ResponseEntity.ok()
@@ -71,14 +59,15 @@ public class UserController {
     }
 
     private void validateUser(User body) throws ValidationException {
-        if (body.getEmail() == null || !body.getEmail().matches(EMAIL_REGEX)) {
-            throw new ValidationException("Электронная почта не может быть пустой и должна содержать символ @!");
-        }
-        if (body.getLogin() == null || body.getLogin().isEmpty() || body.getLogin().chars().anyMatch(Character::isWhitespace)) {
-            throw new ValidationException("Логин не может быть пустым и содержать пробелы!");
+        if (body.getLogin().chars().anyMatch(Character::isWhitespace)) {
+            ValidationException e = new ValidationException("Логин не может быть пустым и содержать пробелы!");
+            log.warn(e.getMessage());
+            throw e;
         }
         if (body.getBirthday().isAfter(LocalDate.now())) {
-            throw new ValidationException("Дата рождения не может быть в будущем!");
+            ValidationException e = new ValidationException("Дата рождения не может быть в будущем!");
+            log.warn(e.getMessage());
+            throw e;
         }
     }
 
