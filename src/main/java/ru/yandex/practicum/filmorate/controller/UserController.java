@@ -33,7 +33,7 @@ public class UserController {
     }
 
     @PostMapping("/users")
-    public ResponseEntity<Object> createUser(@Valid @RequestBody User body) throws JsonProcessingException {
+    public ResponseEntity<Object> createUser(@Valid @RequestBody User body) {
         try {
             validateUser(body);
         } catch (ValidationException e) {
@@ -50,7 +50,7 @@ public class UserController {
     }
 
     @PutMapping("/users/{id}")
-    public ResponseEntity<Object> updateUser(@PathVariable Long id, @RequestBody User body) throws JsonProcessingException {
+    public ResponseEntity<Object> updateUser(@PathVariable Long id, @RequestBody User body) {
         if (!users.containsKey(id)) {
             log.warn(ENTITY_NOT_FOUND_ERROR);
             return ResponseEntity.notFound().build();

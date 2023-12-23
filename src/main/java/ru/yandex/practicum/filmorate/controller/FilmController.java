@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.error.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.utils.DefaultData;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,9 +24,7 @@ import static ru.yandex.practicum.filmorate.utils.DefaultData.*;
 @RestController
 @Slf4j
 public class FilmController {
-    @Autowired
-    private ObjectMapper objectMapper;
-    private HashMap<Long, Film> library = new HashMap<>();
+    private final HashMap<Long, Film> library = new HashMap<>();
 
     @GetMapping("/films")
     public List<Film> getAllFilms() {
@@ -35,7 +32,7 @@ public class FilmController {
     }
 
     @PostMapping("/films")
-    public ResponseEntity<Object> createFilm(@RequestBody Film body) throws JsonProcessingException {
+    public ResponseEntity<Object> createFilm(@RequestBody Film body) {
         try {
             validateFilm(body);
         } catch (ValidationException e) {
@@ -52,7 +49,7 @@ public class FilmController {
     }
 
     @PutMapping("/films/{id}")
-    public ResponseEntity<Object> updateFilm(@PathVariable Long id, @RequestBody Film body) throws JsonProcessingException {
+    public ResponseEntity<Object> updateFilm(@PathVariable Long id, @RequestBody Film body) {
         if (!library.containsKey(id)) {
             log.warn(ENTITY_NOT_FOUND_ERROR);
             return ResponseEntity.notFound().build();
