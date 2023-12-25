@@ -6,6 +6,7 @@ import org.springframework.validation.annotation.Validated;
 import ru.yandex.practicum.filmorate.error.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.utils.FilmIdGenerator;
 import ru.yandex.practicum.filmorate.utils.UserIdGenerator;
 
 import javax.validation.Valid;
@@ -29,7 +30,7 @@ public class ValidatingService {
             throw e;
         }
         if (film.getId() == null) {
-            film.setId(UserIdGenerator.getInstance().getId());
+            film.setId(FilmIdGenerator.getInstance().getId());
         }
     }
 
