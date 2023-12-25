@@ -17,13 +17,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static ru.yandex.practicum.filmorate.utils.DefaultData.ENTITY_NOT_FOUND_ERROR;
 import static ru.yandex.practicum.filmorate.utils.DefaultData.ENTITY_PROCESSED_SUCCESSFUL;
 
 @RestController
 @Slf4j
 public class UserController {
     private final ValidatingService validatingService;
-    private final HashMap<String, User> users = new HashMap<>();
+    private final HashMap<Long, User> users = new HashMap<>();
 
     @Autowired
     public UserController(ValidatingService validatingService) {
@@ -40,7 +41,7 @@ public class UserController {
     public ResponseEntity<Object> createUser(@Valid @RequestBody User body) {
         validatingService.validateUser(body);
 
-        users.put(body.getEmail(), body);
+        users.put(body.getId(), body);
         log.debug(ENTITY_PROCESSED_SUCCESSFUL, body);
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
@@ -49,12 +50,14 @@ public class UserController {
 
     @PutMapping("/users")
     public ResponseEntity<Object> updateUser(@Valid @RequestBody User body) {
-        if (!users.containsKey(body.getEmail())) {
-            return ResponseEntity.internalServerError().build();
+        if (!users.containsKey(body.getId())) {
+            return ResponseEntity.internalServerError()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(ENTITY_NOT_FOUND_ERROR);
         }
         validatingService.validateUser(body);
 
-        users.put(body.getEmail(), body);
+        users.put(body.getId(), body);
         log.debug(ENTITY_PROCESSED_SUCCESSFUL, body);
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)

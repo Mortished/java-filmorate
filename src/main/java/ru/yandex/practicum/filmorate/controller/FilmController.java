@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static ru.yandex.practicum.filmorate.utils.DefaultData.ENTITY_NOT_FOUND_ERROR;
 import static ru.yandex.practicum.filmorate.utils.DefaultData.ENTITY_PROCESSED_SUCCESSFUL;
 
 @RestController
@@ -30,7 +31,7 @@ public class FilmController {
         this.validatingService = validatingService;
     }
 
-    private final HashMap<String, Film> library = new HashMap<>();
+    private final HashMap<Long, Film> library = new HashMap<>();
 
     @GetMapping("/films")
     public List<Film> getAllFilms() {
@@ -41,7 +42,7 @@ public class FilmController {
     public ResponseEntity<Object> createFilm(@Valid @RequestBody Film body) {
         validatingService.validateFilm(body);
 
-        library.put(body.getName(), body);
+        library.put(body.getId(), body);
         log.debug(ENTITY_PROCESSED_SUCCESSFUL, body);
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
@@ -50,12 +51,14 @@ public class FilmController {
 
     @PutMapping("/films")
     public ResponseEntity<Object> updateFilm(@Valid @RequestBody Film body) {
-        if (!library.containsKey(body.getName())) {
-            return ResponseEntity.internalServerError().build();
+        if (!library.containsKey(body.getId())) {
+            return ResponseEntity.internalServerError()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(ENTITY_NOT_FOUND_ERROR);
         }
         validatingService.validateFilm(body);
 
-        library.put(body.getName(), body);
+        library.put(body.getId(), body);
         log.debug(ENTITY_PROCESSED_SUCCESSFUL, body);
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
