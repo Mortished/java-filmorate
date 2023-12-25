@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static ru.yandex.practicum.filmorate.utils.DefaultData.ENTITY_NOT_FOUND_ERROR;
 import static ru.yandex.practicum.filmorate.utils.DefaultData.ENTITY_PROCESSED_SUCCESSFUL;
 
 @RestController
@@ -51,10 +50,6 @@ public class FilmController {
 
     @PutMapping("/films")
     public ResponseEntity<Object> updateFilm(@Valid @RequestBody Film body) {
-        if (!library.containsKey(body.getName())) {
-            log.warn(ENTITY_NOT_FOUND_ERROR);
-            return ResponseEntity.notFound().build();
-        }
 
         validatingService.validateFilm(body);
 

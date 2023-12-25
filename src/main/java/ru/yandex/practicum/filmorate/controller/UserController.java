@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static ru.yandex.practicum.filmorate.utils.DefaultData.ENTITY_NOT_FOUND_ERROR;
 import static ru.yandex.practicum.filmorate.utils.DefaultData.ENTITY_PROCESSED_SUCCESSFUL;
 
 @RestController
@@ -50,10 +49,7 @@ public class UserController {
 
     @PutMapping("/users")
     public ResponseEntity<Object> updateUser(@Valid @RequestBody User body) {
-        if (!users.containsKey(body.getEmail())) {
-            log.warn(ENTITY_NOT_FOUND_ERROR);
-            return ResponseEntity.notFound().build();
-        }
+
         validatingService.validateUser(body);
 
         users.put(body.getEmail(), body);
