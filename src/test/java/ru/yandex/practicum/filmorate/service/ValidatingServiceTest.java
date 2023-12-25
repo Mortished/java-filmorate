@@ -1,0 +1,156 @@
+package ru.yandex.practicum.filmorate.service;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import ru.yandex.practicum.filmorate.error.ValidationException;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
+
+import javax.validation.ConstraintViolationException;
+import java.time.LocalDate;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static ru.yandex.practicum.filmorate.utils.DefaultData.FILM_RELEASE_DATE;
+
+@SpringBootTest
+class ValidatingServiceTest {
+
+    @Autowired
+    ValidatingService service;
+
+    @Test
+    void validateFilmPositive() {
+        Film film = getDefaultFilm();
+
+        assertDoesNotThrow(() -> service.validateFilm(film));
+    }
+
+    @Test
+    void validateFilmNullName() {
+        Film film = getDefaultFilm();
+        film.setName(null);
+
+        String expectedMsg = "Необходимо указать имя";
+
+        var result = assertThrows(ConstraintViolationException.class, () -> service.validateFilm(film));
+        assertEquals(expectedMsg, getErrorMessage(result.getMessage()));
+    }
+    @Test
+    void validateFilmEmptyName() {
+        Film film = getDefaultFilm();
+        film.setName("");
+
+        String expectedMsg = "Необходимо указать имя";
+
+        var result = assertThrows(ConstraintViolationException.class, () -> service.validateFilm(film));
+        assertEquals(expectedMsg, getErrorMessage(result.getMessage()));
+    }
+    @Test
+    void validateFilmDescription() {
+        Film film = getDefaultFilm();
+        film.setDescription("CegjxX2tfX776lj3f2NY6Wll5KGRlTbPYecErJeCxlDx9NErGgKyhJ2DwtFRJKOBMFdRaGPaOiWKK0VMd9SD3WXmjx0gOHQtPwoN8jYgOw60V8tLiXMeoJ6ea1QXAdHwXLhlwldAPB9lHPraQoQlZqoQfrycZiGBBFNSyv18WuvayZZlWy75AF02pZBDmSXYhlmUvlZK1");
+
+        String expectedMsg = "Длинна описания (description) не может превышать 200 символов!";
+
+        var result = assertThrows(ValidationException.class, () -> service.validateFilm(film));
+        assertEquals(expectedMsg, result.getMessage());
+    }
+
+    @Test
+    void validateFilmReleaseDate() {
+        Film film = getDefaultFilm();
+        film.setReleaseDate(FILM_RELEASE_DATE.minusDays(1));
+
+        String expectedMsg = "Дата релиза (releaseDate) не может быть раньше 28.12.1895";
+
+        var result = assertThrows(ValidationException.class, () -> service.validateFilm(film));
+        assertEquals(expectedMsg, result.getMessage());
+    }
+
+    @Test
+    void validateFilmDuration() {
+        Film film = getDefaultFilm();
+        film.setDuration(0L);
+
+        String expectedMsg = "Продолжительность фильма (duration) должна быть положительной";
+
+        var result = assertThrows(ConstraintViolationException.class, () -> service.validateFilm(film));
+        assertEquals(expectedMsg, getErrorMessage(result.getMessage()));
+    }
+
+    private Film getDefaultFilm() {
+        return new Film(1L, "name", "CegjxX2tfX776lj3f2NY6Wll5KGRlTbPYecErJeCxlDx9NErGgKyhJ2DwtFRJKOBMFdRaGPaOiWKK0VMd9SD3WXmjx0gOHQtPwoN8jYgOw60V8tLiXMeoJ6ea1QXAdHwXLhlwldAPB9lHPraQoQlZqoQfrycZiGBBFNSyv18WuvayZZlWy75AF02pZBDmSXYhlmUvlZK", FILM_RELEASE_DATE, 100L);
+    }
+
+    private String getErrorMessage(String fullMsg) {
+        return fullMsg.split(":")[1].substring(1);
+    }
+
+    @Test
+    void validateUserPositive() {
+        User user = getDefaultUser();
+
+        assertDoesNotThrow(() -> service.validateUser(user));
+    }
+
+    @Test
+    void validateUserEmail() {
+        User user = getDefaultUser();
+        user.setEmail("123");
+
+        String expectedMsg = "Email должен быть корректным адресом электронной почты";
+
+        var result = assertThrows(ConstraintViolationException.class, () -> service.validateUser(user));
+        assertEquals(expectedMsg, getErrorMessage(result.getMessage()));
+    }
+
+    @Test
+    void validateUserLoginNull() {
+        User user = getDefaultUser();
+        user.setLogin(null);
+
+        String expectedMsg = "Необходимо указать login";
+
+        var result = assertThrows(ConstraintViolationException.class, () -> service.validateUser(user));
+        assertEquals(expectedMsg, getErrorMessage(result.getMessage()));
+    }
+
+    @Test
+    void validateUserLoginEmpty() {
+        User user = getDefaultUser();
+        user.setLogin("");
+
+        String expectedMsg = "Необходимо указать login";
+
+        var result = assertThrows(ConstraintViolationException.class, () -> service.validateUser(user));
+        assertEquals(expectedMsg, getErrorMessage(result.getMessage()));
+    }
+
+    @Test
+    void validateUserLoginWithWhitespace() {
+        User user = getDefaultUser();
+        user.setLogin("1 1");
+
+        String expectedMsg = "Логин не может быть пустым и содержать пробелы!";
+
+        var result = assertThrows(ValidationException.class, () -> service.validateUser(user));
+        assertEquals(expectedMsg, result.getMessage());
+    }
+
+    @Test
+    void validateUserBirthday() {
+        User user = getDefaultUser();
+        user.setBirthday(LocalDate.of(2090,1,1));
+
+        String expectedMsg = "Дата рождения(birthday) не должна быть больше текущей";
+
+        var result = assertThrows(ConstraintViolationException.class, () -> service.validateUser(user));
+        assertEquals(expectedMsg, getErrorMessage(result.getMessage()));
+    }
+
+    private User getDefaultUser() {
+        return new User(1L, "test@email.ru", "login", "name", FILM_RELEASE_DATE);
+    }
+
+}
