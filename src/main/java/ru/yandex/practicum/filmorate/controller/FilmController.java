@@ -50,7 +50,9 @@ public class FilmController {
 
     @PutMapping("/films")
     public ResponseEntity<Object> updateFilm(@Valid @RequestBody Film body) {
-
+        if (!library.containsKey(body.getName())) {
+            return ResponseEntity.internalServerError().build();
+        }
         validatingService.validateFilm(body);
 
         library.put(body.getName(), body);

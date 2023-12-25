@@ -49,7 +49,9 @@ public class UserController {
 
     @PutMapping("/users")
     public ResponseEntity<Object> updateUser(@Valid @RequestBody User body) {
-
+        if (!users.containsKey(body.getEmail())) {
+            return ResponseEntity.internalServerError().build();
+        }
         validatingService.validateUser(body);
 
         users.put(body.getEmail(), body);
