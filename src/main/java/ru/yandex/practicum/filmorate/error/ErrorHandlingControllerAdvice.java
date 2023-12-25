@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import java.util.HashMap;
 import java.util.Map;
 
+import static ru.yandex.practicum.filmorate.utils.DefaultData.MESSAGE;
+
 @ControllerAdvice
 @Slf4j
 public class ErrorHandlingControllerAdvice {
@@ -25,7 +27,7 @@ public class ErrorHandlingControllerAdvice {
             String fieldName = ((FieldError) error).getField();
             String errorMessage = error.getDefaultMessage();
             errors.put(fieldName, errorMessage);
-            log.warn("message: " + errorMessage);
+            log.warn(MESSAGE + errorMessage);
         });
         return errors;
     }
@@ -36,7 +38,17 @@ public class ErrorHandlingControllerAdvice {
     public Map<String, String> handleValidationExceptions(ValidationException ex) {
         Map<String, String> errors = new HashMap<>();
         errors.put("message", ex.getMessage());
-        log.warn("message: " + ex.getMessage());
+        log.warn(MESSAGE + ex.getMessage());
+        return errors;
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(NotFoundException.class)
+    @ResponseBody
+    public Map<String, String> handleValidationExceptions(NotFoundException ex) {
+        Map<String, String> errors = new HashMap<>();
+        errors.put("message", ex.getMessage());
+        log.warn(MESSAGE + ex.getMessage());
         return errors;
     }
 

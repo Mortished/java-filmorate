@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import ru.yandex.practicum.filmorate.error.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.ValidatingService;
 
@@ -17,7 +18,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static ru.yandex.practicum.filmorate.utils.DefaultData.ENTITY_NOT_FOUND_ERROR;
 import static ru.yandex.practicum.filmorate.utils.DefaultData.ENTITY_PROCESSED_SUCCESSFUL;
 
 @RestController
@@ -51,9 +51,7 @@ public class UserController {
     @PutMapping("/users")
     public ResponseEntity<Object> updateUser(@Valid @RequestBody User body) {
         if (!users.containsKey(body.getId())) {
-            return ResponseEntity.internalServerError()
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(ENTITY_NOT_FOUND_ERROR);
+            throw new NotFoundException();
         }
         validatingService.validateUser(body);
 
