@@ -36,6 +36,7 @@ class ValidatingServiceTest {
         var result = assertThrows(ConstraintViolationException.class, () -> service.validateFilm(film));
         assertEquals(expectedMsg, getErrorMessage(result.getMessage()));
     }
+
     @Test
     void validateFilmEmptyName() {
         Film film = getDefaultFilm();
@@ -46,6 +47,7 @@ class ValidatingServiceTest {
         var result = assertThrows(ConstraintViolationException.class, () -> service.validateFilm(film));
         assertEquals(expectedMsg, getErrorMessage(result.getMessage()));
     }
+
     @Test
     void validateFilmDescription() {
         Film film = getDefaultFilm();
@@ -141,7 +143,7 @@ class ValidatingServiceTest {
     @Test
     void validateUserBirthday() {
         User user = getDefaultUser();
-        user.setBirthday(LocalDate.of(2090,1,1));
+        user.setBirthday(LocalDate.of(2090, 1, 1));
 
         String expectedMsg = "Дата рождения(birthday) не должна быть больше текущей";
 
