@@ -6,6 +6,7 @@ import org.springframework.validation.annotation.Validated;
 import ru.yandex.practicum.filmorate.error.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.utils.UserIdGenerator;
 
 import javax.validation.Valid;
 
@@ -27,6 +28,9 @@ public class ValidatingService {
             log.warn(e.getMessage());
             throw e;
         }
+        if (film.getId() == null) {
+            film.setId(UserIdGenerator.getInstance().getId());
+        }
     }
 
     public void validateUser(@Valid User user) {
@@ -34,6 +38,12 @@ public class ValidatingService {
             ValidationException e = new ValidationException("Логин не может быть пустым и содержать пробелы!");
             log.warn(e.getMessage());
             throw e;
+        }
+        if (user.getId() == null) {
+            user.setId(UserIdGenerator.getInstance().getId());
+        }
+        if (user.getName() == null) {
+            user.setName(user.getLogin());
         }
     }
 }
