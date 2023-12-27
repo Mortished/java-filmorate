@@ -19,11 +19,6 @@ import static ru.yandex.practicum.filmorate.utils.DefaultData.FILM_RELEASE_DATE;
 public class ValidatingService {
 
     public void validateFilm(@Valid Film film) {
-        if (film.getDescription().length() > 200) {
-            ValidationException e = new ValidationException("Длинна описания (description) не может превышать 200 символов!");
-            log.warn(e.getMessage());
-            throw e;
-        }
         if (film.getReleaseDate().isBefore(FILM_RELEASE_DATE)) {
             ValidationException e = new ValidationException("Дата релиза (releaseDate) не может быть раньше 28.12.1895");
             log.warn(e.getMessage());

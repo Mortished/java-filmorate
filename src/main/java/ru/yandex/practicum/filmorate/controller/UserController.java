@@ -2,8 +2,6 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -38,18 +36,16 @@ public class UserController {
     }
 
     @PostMapping("/users")
-    public ResponseEntity<Object> createUser(@Valid @RequestBody User body) {
+    public User createUser(@Valid @RequestBody User body) {
         validatingService.validateUser(body);
 
         users.put(body.getId(), body);
         log.debug(ENTITY_PROCESSED_SUCCESSFUL, body);
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(body);
+        return users.get(body.getId());
     }
 
     @PutMapping("/users")
-    public ResponseEntity<Object> updateUser(@Valid @RequestBody User body) {
+    public User updateUser(@Valid @RequestBody User body) {
         if (!users.containsKey(body.getId())) {
             throw new NotFoundException();
         }
@@ -57,9 +53,7 @@ public class UserController {
 
         users.put(body.getId(), body);
         log.debug(ENTITY_PROCESSED_SUCCESSFUL, body);
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(body);
+        return users.get(body.getId());
     }
 
 }

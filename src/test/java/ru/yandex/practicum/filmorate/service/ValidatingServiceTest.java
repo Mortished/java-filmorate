@@ -55,8 +55,8 @@ class ValidatingServiceTest {
 
         String expectedMsg = "Длинна описания (description) не может превышать 200 символов!";
 
-        var result = assertThrows(ValidationException.class, () -> service.validateFilm(film));
-        assertEquals(expectedMsg, result.getMessage());
+        var result = assertThrows(ConstraintViolationException.class, () -> service.validateFilm(film));
+        assertEquals(expectedMsg, getErrorMessage(result.getMessage()));
     }
 
     @Test
