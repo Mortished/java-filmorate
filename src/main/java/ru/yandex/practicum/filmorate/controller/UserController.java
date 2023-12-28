@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.error.NotFoundException;
-import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.ValidatingService;
 
 import javax.validation.Valid;
@@ -20,40 +20,40 @@ import static ru.yandex.practicum.filmorate.utils.DefaultData.ENTITY_PROCESSED_S
 
 @RestController
 @Slf4j
-public class FilmController {
-
+public class UserController {
     private final ValidatingService validatingService;
-    private final HashMap<Long, Film> library = new HashMap<>();
+    private final HashMap<Long, User> users = new HashMap<>();
 
     @Autowired
-    public FilmController(ValidatingService validatingService) {
+    public UserController(ValidatingService validatingService) {
         this.validatingService = validatingService;
     }
 
-    @GetMapping("/films")
-    public List<Film> getAllFilms() {
-        return new ArrayList<>(library.values());
+
+    @GetMapping("/users")
+    public List<User> getAllUsers() {
+        return new ArrayList<>(users.values());
     }
 
-    @PostMapping("/films")
-    public Film createFilm(@Valid @RequestBody Film body) {
-        validatingService.validateFilm(body);
+    @PostMapping("/users")
+    public User createUser(@Valid @RequestBody User body) {
+        validatingService.validateUser(body);
 
-        library.put(body.getId(), body);
+        users.put(body.getId(), body);
         log.debug(ENTITY_PROCESSED_SUCCESSFUL, body);
-        return library.get(body.getId());
+        return users.get(body.getId());
     }
 
-    @PutMapping("/films")
-    public Film updateFilm(@Valid @RequestBody Film body) {
-        if (!library.containsKey(body.getId())) {
+    @PutMapping("/users")
+    public User updateUser(@Valid @RequestBody User body) {
+        if (!users.containsKey(body.getId())) {
             throw new NotFoundException();
         }
-        validatingService.validateFilm(body);
+        validatingService.validateUser(body);
 
-        library.put(body.getId(), body);
+        users.put(body.getId(), body);
         log.debug(ENTITY_PROCESSED_SUCCESSFUL, body);
-        return library.get(body.getId());
+        return users.get(body.getId());
     }
 
 }
