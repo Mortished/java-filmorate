@@ -2,54 +2,51 @@ package ru.yandex.practicum.filmorate.error;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import static ru.yandex.practicum.filmorate.utils.DefaultData.MESSAGE;
 
-@ControllerAdvice
+@RestControllerAdvice
 @Slf4j
 public class ErrorHandlingControllerAdvice {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseBody
-    public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
+    public List<ApiError> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        List<ApiError> errorList = new ArrayList<>();
         ex.getBindingResult().getAllErrors().forEach(error -> {
-            String fieldName = ((FieldError) error).getField();
             String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
+            errorList.add(new ApiError(errorMessage));
             log.warn(MESSAGE + errorMessage);
         });
-        return errors;
+        return errorList;
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(ValidationException.class)
-    @ResponseBody
-    public Map<String, String> handleValidationExceptions(ValidationException ex) {
-        Map<String, String> errors = new HashMap<>();
-        errors.put("message", ex.getMessage());
+    public ApiError handleValidationExceptions(ValidationException ex) {
         log.warn(MESSAGE + ex.getMessage());
-        return errors;
+        return new ApiError(ex.getMessage());
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(NotFoundException.class)
-    @ResponseBody
-    public Map<String, String> handleValidationExceptions(NotFoundException ex) {
-        Map<String, String> errors = new HashMap<>();
-        errors.put("message", ex.getMessage());
+    public ApiError handleValidationExceptions(NotFoundException ex) {
         log.warn(MESSAGE + ex.getMessage());
-        return errors;
+        return new ApiError(ex.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(NotExistException.class)
+    public ApiError handleValidationExceptions(NotExistException ex) {
+        log.warn(MESSAGE + ex.getMessage());
+        return new ApiError(ex.getMessage());
     }
 
 }

@@ -1,59 +1,64 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ru.yandex.practicum.filmorate.error.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.service.ValidatingService;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-import static ru.yandex.practicum.filmorate.utils.DefaultData.ENTITY_PROCESSED_SUCCESSFUL;
-
 @RestController
+@RequestMapping(value = "/films")
 @Slf4j
 public class FilmController {
 
-    private final ValidatingService validatingService;
-    private final HashMap<Long, Film> library = new HashMap<>();
+    private final FilmService filmService;
 
-    @Autowired
-    public FilmController(ValidatingService validatingService) {
-        this.validatingService = validatingService;
+    public FilmController(FilmService filmService) {
+        this.filmService = filmService;
     }
 
-    @GetMapping("/films")
+    @GetMapping
     public List<Film> getAllFilms() {
-        return new ArrayList<>(library.values());
+        return filmService.getAll();
     }
 
-    @PostMapping("/films")
+    @PostMapping
     public Film createFilm(@Valid @RequestBody Film body) {
-        validatingService.validateFilm(body);
-
-        library.put(body.getId(), body);
-        log.debug(ENTITY_PROCESSED_SUCCESSFUL, body);
-        return library.get(body.getId());
+        return filmService.create(body);
     }
 
-    @PutMapping("/films")
+    @PutMapping
     public Film updateFilm(@Valid @RequestBody Film body) {
-        if (!library.containsKey(body.getId())) {
-            throw new NotFoundException();
-        }
-        validatingService.validateFilm(body);
-
-        library.put(body.getId(), body);
-        log.debug(ENTITY_PROCESSED_SUCCESSFUL, body);
-        return library.get(body.getId());
+        return filmService.update(body);
     }
 
+    @PutMapping("/{id}/like/{userId}")
+    public void likeFilm(@PathVariable Long id, @PathVariable Long userId) {
+        filmService.likeFilm(id, userId);
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public void dislikeFilm(@PathVariable Long id, @PathVariable Long userId) {
+        filmService.dislikeFilm(id, userId);
+    }
+
+    @GetMapping("/popular")
+    public List<Film> getPopularFilmList(@RequestParam(defaultValue = "10") Long count) {
+        return filmService.getPopularFilms(count);
+    }
+
+    @GetMapping("/{id}")
+    public Film getFilmById(@PathVariable Long id) {
+        return filmService.getFilmById(id);
+    }
 }
