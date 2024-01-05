@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import ru.yandex.practicum.filmorate.error.ValidationException;
@@ -20,7 +19,6 @@ import static ru.yandex.practicum.filmorate.utils.DefaultData.ENTITY_PROCESSED_S
 public class UserService {
     private final InMemoryUserStorage userStorage;
 
-    @Autowired
     public UserService(InMemoryUserStorage userStorage) {
         this.userStorage = userStorage;
     }
@@ -41,20 +39,6 @@ public class UserService {
         userStorage.update(user);
         log.debug(ENTITY_PROCESSED_SUCCESSFUL, user);
         return user;
-    }
-
-    private void validateUser(@Valid User user) {
-        if (user.getLogin().chars().anyMatch(Character::isWhitespace)) {
-            ValidationException e = new ValidationException("Логин не может быть пустым и содержать пробелы!");
-            log.warn(e.getMessage());
-            throw e;
-        }
-        if (user.getId() == null) {
-            user.setId(UserIdGenerator.getInstance().getId());
-        }
-        if (user.getName() == null || user.getName().isEmpty()) {
-            user.setName(user.getLogin());
-        }
     }
 
     public void addFriend(Long id, Long friendId) {
@@ -90,5 +74,19 @@ public class UserService {
 
     public User getUserById(Long id) {
         return userStorage.getUserById(id);
+    }
+
+    private void validateUser(@Valid User user) {
+        if (user.getLogin().chars().anyMatch(Character::isWhitespace)) {
+            ValidationException e = new ValidationException("Логин не может быть пустым и содержать пробелы!");
+            log.warn(e.getMessage());
+            throw e;
+        }
+        if (user.getId() == null) {
+            user.setId(UserIdGenerator.getInstance().getId());
+        }
+        if (user.getName() == null || user.getName().isEmpty()) {
+            user.setName(user.getLogin());
+        }
     }
 }

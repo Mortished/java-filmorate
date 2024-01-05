@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import ru.yandex.practicum.filmorate.error.ValidationException;
@@ -23,7 +22,6 @@ public class FilmService {
     private final InMemoryFilmStorage filmStorage;
     private final InMemoryUserStorage userStorage;
 
-    @Autowired
     public FilmService(InMemoryFilmStorage filmStorage, InMemoryUserStorage userStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
@@ -47,18 +45,6 @@ public class FilmService {
         return film;
     }
 
-
-    private void validateFilm(@Valid Film film) {
-        if (film.getReleaseDate().isBefore(FILM_RELEASE_DATE)) {
-            ValidationException e = new ValidationException("Дата релиза (releaseDate) не может быть раньше 28.12.1895");
-            log.warn(e.getMessage());
-            throw e;
-        }
-        if (film.getId() == null) {
-            film.setId(FilmIdGenerator.getInstance().getId());
-        }
-    }
-
     public void likeFilm(Long id, Long userId) {
         userStorage.getUserById(userId);
         Film film = filmStorage.getFilmById(id);
@@ -77,5 +63,16 @@ public class FilmService {
 
     public Film getFilmById(Long id) {
         return filmStorage.getFilmById(id);
+    }
+
+    private void validateFilm(@Valid Film film) {
+        if (film.getReleaseDate().isBefore(FILM_RELEASE_DATE)) {
+            ValidationException e = new ValidationException("Дата релиза (releaseDate) не может быть раньше 28.12.1895");
+            log.warn(e.getMessage());
+            throw e;
+        }
+        if (film.getId() == null) {
+            film.setId(FilmIdGenerator.getInstance().getId());
+        }
     }
 }

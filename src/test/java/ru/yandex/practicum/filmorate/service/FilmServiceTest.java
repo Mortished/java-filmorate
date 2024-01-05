@@ -87,5 +87,4 @@ class FilmServiceTest {
         return fullMsg.split(":")[1].substring(1);
     }
 
-
 }
