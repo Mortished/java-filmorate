@@ -83,7 +83,7 @@ create table if not exists friendship
 (
     user_from int     not null,
     user_to   int     not null,
-    approved  boolean not null,
+    approved  boolean not null default false,
     constraint FRIENDSHIP_USERS_ID_FK
         foreign key (user_from) references USERS,
     constraint FRIENDSHIP_USERS_ID_FK_2

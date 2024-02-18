@@ -41,8 +41,7 @@ public class FilmService {
     public Film update(@Valid Film film) {
         validateFilm(film);
         log.debug(ENTITY_PROCESSED_SUCCESSFUL, film);
-        filmStorage.update(film);
-        return film;
+        return filmStorage.update(film);
     }
 
     public void likeFilm(Long id, Long userId) {

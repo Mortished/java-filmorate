@@ -39,6 +39,8 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User update(User user) {
+        getUserById(user.getId());
+
         String sql = "UPDATE users\n" +
                 "SET email         = ?,\n" +
                 "    login  = ?,\n" +
@@ -72,16 +74,6 @@ public class UserDbStorage implements UserStorage {
         return jdbcTemplate.query(sql, (rs, row) -> makeUser(rs), id);
     }
 
-    private User makeUser(ResultSet rs) throws SQLException {
-        return new User(
-                rs.getLong("id"),
-                rs.getString("email"),
-                rs.getString("login"),
-                rs.getString("name"),
-                rs.getDate("birthday").toLocalDate()
-        );
-    }
-
     public void addFriendship(Long userFrom, Long userTo) {
         String sql = "INSERT INTO friendship(user_from, user_to)" +
                 "VALUES (?, ?)";
@@ -93,14 +85,14 @@ public class UserDbStorage implements UserStorage {
         jdbcTemplate.update(sql, userFrom, userTo);
     }
 
-    //TODO
-    public boolean friendshipIsPresent(Long userFrom, Long userTo) {
-        String sql = "SELECT *\n" +
-                "FROM friendship\n" +
-                "where user_from in (?, ?)\n" +
-                "  and user_to in (?, ?);";
-        return true;
+    private User makeUser(ResultSet rs) throws SQLException {
+        return new User(
+                rs.getLong("id"),
+                rs.getString("email"),
+                rs.getString("login"),
+                rs.getString("name"),
+                rs.getDate("birthday").toLocalDate()
+        );
     }
-
 
 }

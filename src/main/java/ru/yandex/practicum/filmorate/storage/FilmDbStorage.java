@@ -29,7 +29,7 @@ public class FilmDbStorage implements FilmStorage {
         String sql = "SELECT f.*,\n" +
                 "       r.name as rating_name\n" +
                 "FROM film f\n" +
-                "         join rating r on f.rating = r.id;";
+                "         left join rating r on f.rating = r.id;";
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs));
     }
 
@@ -45,7 +45,11 @@ public class FilmDbStorage implements FilmStorage {
             stmt.setString(2, film.getDescription());
             stmt.setDate(3, Date.valueOf(film.getReleaseDate()));
             stmt.setLong(4, film.getDuration());
-            stmt.setLong(5, film.getMpa().getId());
+            if (film.getMpa() != null) {
+                stmt.setLong(5, film.getMpa().getId());
+            } else {
+                stmt.setObject(5, null);
+            }
             return stmt;
         }, keyHolder);
 
@@ -104,11 +108,10 @@ public class FilmDbStorage implements FilmStorage {
         String sql = "select f.*, r.name as rating_name\n" +
                 "from film f\n" +
                 "         join rating r on f.rating = r.id\n" +
-                "where f.id in (select film_id\n" +
-                "               from favorite_films\n" +
-                "               group by film_id\n" +
-                "               order by count(*) desc\n" +
-                "               limit ?);";
+                "         left join favorite_films ff on f.id = ff.film_id\n" +
+                "group by f.id\n" +
+                "order by count(ff.film_id) desc\n" +
+                "limit ?;";
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), count);
     }
 
