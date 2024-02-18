@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import ru.yandex.practicum.filmorate.error.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.FilmDbStorage;
+import ru.yandex.practicum.filmorate.storage.UserDbStorage;
 import ru.yandex.practicum.filmorate.utils.FilmIdGenerator;
 
 import javax.validation.Valid;
@@ -19,10 +19,10 @@ import static ru.yandex.practicum.filmorate.utils.DefaultData.FILM_RELEASE_DATE;
 @Validated
 @Slf4j
 public class FilmService {
-    private final InMemoryFilmStorage filmStorage;
-    private final InMemoryUserStorage userStorage;
+    private final FilmDbStorage filmStorage;
+    private final UserDbStorage userStorage;
 
-    public FilmService(InMemoryFilmStorage filmStorage, InMemoryUserStorage userStorage) {
+    public FilmService(FilmDbStorage filmStorage, UserDbStorage userStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
     }
@@ -47,14 +47,14 @@ public class FilmService {
 
     public void likeFilm(Long id, Long userId) {
         userStorage.getUserById(userId);
-        Film film = filmStorage.getFilmById(id);
-        film.getUserLikes().add(userId);
+        filmStorage.getFilmById(id);
+        filmStorage.likeFilm(userId, id);
     }
 
     public void dislikeFilm(Long id, Long userId) {
         userStorage.getUserById(userId);
-        Film film = filmStorage.getFilmById(id);
-        film.getUserLikes().remove(userId);
+        filmStorage.getFilmById(id);
+        filmStorage.dislikeFilm(userId, id);
     }
 
     public List<Film> getPopularFilms(Long count) {

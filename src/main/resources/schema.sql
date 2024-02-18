@@ -19,7 +19,7 @@ create table if not exists rating
         primary key (id)
 );
 
-comment on table rating is 'Каталожные значения рейтинга MPA';
+comment on table rating is 'Таблица с каталожными значениями рейтинга MPA';
 
 --- FILM
 create table if not exists film

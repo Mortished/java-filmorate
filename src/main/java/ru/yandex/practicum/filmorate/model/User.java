@@ -8,8 +8,6 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -25,6 +23,4 @@ public class User {
     @NotNull
     @Past(message = "Дата рождения(birthday) не должна быть больше текущей")
     private LocalDate birthday;
-    private final Set<Long> friends = new HashSet<>();
-
 }

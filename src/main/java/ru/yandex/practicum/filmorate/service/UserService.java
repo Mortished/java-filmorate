@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import ru.yandex.practicum.filmorate.error.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.UserDbStorage;
 import ru.yandex.practicum.filmorate.utils.UserIdGenerator;
 
 import javax.validation.Valid;
@@ -17,9 +17,9 @@ import static ru.yandex.practicum.filmorate.utils.DefaultData.ENTITY_PROCESSED_S
 @Validated
 @Slf4j
 public class UserService {
-    private final InMemoryUserStorage userStorage;
+    private final UserDbStorage userStorage;
 
-    public UserService(InMemoryUserStorage userStorage) {
+    public UserService(UserDbStorage userStorage) {
         this.userStorage = userStorage;
     }
 
@@ -42,23 +42,15 @@ public class UserService {
     }
 
     public void addFriend(Long id, Long friendId) {
-        User firstUser = userStorage.getUserById(id);
-        User secondUser = userStorage.getUserById(friendId);
-
-        firstUser.getFriends().add(friendId);
-        secondUser.getFriends().add(id);
-        userStorage.update(firstUser);
-        userStorage.update(secondUser);
+        userStorage.getUserById(id);
+        userStorage.getUserById(friendId);
+        userStorage.addFriendship(id, friendId);
     }
 
     public void removeFriend(Long id, Long friendId) {
-        User firstUser = userStorage.getUserById(id);
-        User secondUser = userStorage.getUserById(friendId);
-
-        firstUser.getFriends().remove(friendId);
-        secondUser.getFriends().remove(id);
-        userStorage.update(firstUser);
-        userStorage.update(secondUser);
+        userStorage.getUserById(id);
+        userStorage.getUserById(friendId);
+        userStorage.removeFriendship(id, friendId);
     }
 
     public List<User> getUserFriends(Long id) {
