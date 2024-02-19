@@ -21,8 +21,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class FilmDbStorageImplTest {
 
-    private final static String FILM_SQL = "ALTER TABLE film ALTER COLUMN id RESTART WITH 1";
-    private final static String USERS_SQL = "ALTER TABLE users ALTER COLUMN id RESTART WITH 1";
+    private final String FILM_SQL = "ALTER TABLE film ALTER COLUMN id RESTART WITH 1";
+    private final String USERS_SQL = "ALTER TABLE users ALTER COLUMN id RESTART WITH 1";
     private final JdbcTemplate jdbcTemplate;
     private FilmDbStorageImpl storage;
 

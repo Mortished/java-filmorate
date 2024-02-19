@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class UserDbStorageImplTest {
 
-    private final static String SQL = "ALTER TABLE users ALTER COLUMN id RESTART WITH 1";
+    private final String SQL = "ALTER TABLE users ALTER COLUMN id RESTART WITH 1";
     private final JdbcTemplate jdbcTemplate;
     private UserDbStorageImpl userDbStorage;
 
