@@ -21,16 +21,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class FilmDbStorageImplTest {
 
-    private final String FILM_SQL = "ALTER TABLE film ALTER COLUMN id RESTART WITH 1";
-    private final String USERS_SQL = "ALTER TABLE users ALTER COLUMN id RESTART WITH 1";
+    private final String filmSql = "ALTER TABLE film ALTER COLUMN id RESTART WITH 1";
+    private final String usersSql = "ALTER TABLE users ALTER COLUMN id RESTART WITH 1";
     private final JdbcTemplate jdbcTemplate;
     private FilmDbStorageImpl storage;
 
     @BeforeEach
     void prepareData() {
         storage = new FilmDbStorageImpl(jdbcTemplate);
-        jdbcTemplate.update(FILM_SQL);
-        jdbcTemplate.update(USERS_SQL);
+        jdbcTemplate.update(filmSql);
+        jdbcTemplate.update(usersSql);
     }
 
     @AfterEach
