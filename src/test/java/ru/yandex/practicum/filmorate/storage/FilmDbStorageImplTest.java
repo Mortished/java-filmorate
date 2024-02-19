@@ -1,10 +1,13 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.jdbc.JdbcTestUtils;
 import ru.yandex.practicum.filmorate.model.Catalog;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
@@ -16,14 +19,27 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-public class FilmDbStorageTest {
+public class FilmDbStorageImplTest {
 
+    private final static String FILM_SQL = "ALTER TABLE film ALTER COLUMN id RESTART WITH 1";
+    private final static String USERS_SQL = "ALTER TABLE users ALTER COLUMN id RESTART WITH 1";
     private final JdbcTemplate jdbcTemplate;
+    private FilmDbStorageImpl storage;
+
+    @BeforeEach
+    void prepareData() {
+        storage = new FilmDbStorageImpl(jdbcTemplate);
+        jdbcTemplate.update(FILM_SQL);
+        jdbcTemplate.update(USERS_SQL);
+    }
+
+    @AfterEach
+    void tearDown() {
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "film_genre", "favorite_films", "film", "users");
+    }
 
     @Test
     public void getAll() {
-        FilmDbStorage storage = new FilmDbStorage(jdbcTemplate);
-
         var expected = List.of(getDefaultFilm(), getSecondFilm());
         expected.forEach(storage::save);
 
@@ -37,8 +53,6 @@ public class FilmDbStorageTest {
 
     @Test
     public void create() {
-        FilmDbStorage storage = new FilmDbStorage(jdbcTemplate);
-
         var expected = getDefaultFilm();
 
         storage.save(expected);
@@ -51,8 +65,6 @@ public class FilmDbStorageTest {
 
     @Test
     public void update() {
-        FilmDbStorage storage = new FilmDbStorage(jdbcTemplate);
-
         var first = getDefaultFilm();
         var updated = getSecondFilm();
         updated.setId(first.getId());
@@ -69,8 +81,6 @@ public class FilmDbStorageTest {
 
     @Test
     public void getById() {
-        FilmDbStorage storage = new FilmDbStorage(jdbcTemplate);
-
         var expected = getDefaultFilm();
         storage.save(expected);
 
@@ -83,8 +93,7 @@ public class FilmDbStorageTest {
 
     @Test
     public void getPopularFilms() {
-        FilmDbStorage storage = new FilmDbStorage(jdbcTemplate);
-        UserDbStorage userDbStorage = new UserDbStorage(jdbcTemplate);
+        UserDbStorageImpl userDbStorage = new UserDbStorageImpl(jdbcTemplate);
 
         storage.save(getDefaultFilm());
         storage.save(getSecondFilm());

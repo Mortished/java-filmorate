@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
@@ -11,23 +12,30 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+
 @JdbcTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-public class RatingDbStorageTest {
+public class GenreDbStorageImplTest {
 
     private final JdbcTemplate jdbcTemplate;
+    private GenreDbStorageImpl genreDbStorage;
+
+    @BeforeEach
+    void prepareData() {
+        genreDbStorage = new GenreDbStorageImpl(jdbcTemplate);
+    }
 
     @Test
-    public void findAll() {
+    public void findAllGenres() {
         var expected = List.of(
-                new Catalog(1L, "G"),
-                new Catalog(2L, "PG"),
-                new Catalog(3L, "PG-13"),
-                new Catalog(4L, "R"),
-                new Catalog(5L, "NC-17")
+                new Catalog(1L, "Комедия"),
+                new Catalog(2L, "Драма"),
+                new Catalog(3L, "Мультфильм"),
+                new Catalog(4L, "Триллер"),
+                new Catalog(5L, "Документальный"),
+                new Catalog(6L, "Боевик")
         );
-        RatingDbStorage ratingDbStorage = new RatingDbStorage(jdbcTemplate);
-        var result = ratingDbStorage.getAll();
+        var result = genreDbStorage.getAll();
 
         assertThat(result)
                 .isNotNull()
@@ -37,17 +45,16 @@ public class RatingDbStorageTest {
     }
 
     @Test
-    public void findRatingById() {
-        var expected = new Catalog(5L, "NC-17");
+    public void findGenreById() {
+        var expected = new Catalog(3L, "Мультфильм");
 
-        RatingDbStorage ratingDbStorage = new RatingDbStorage(jdbcTemplate);
-
-        var result = ratingDbStorage.getById(5L);
+        var result = genreDbStorage.getById(3L);
         assertThat(result)
                 .isNotNull()
                 .usingRecursiveComparison()
                 .isEqualTo(expected);
 
     }
+
 
 }

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.FilmServiceImpl;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -21,44 +21,44 @@ import java.util.List;
 @Slf4j
 public class FilmController {
 
-    private final FilmService filmService;
+    private final FilmServiceImpl filmServiceImpl;
 
-    public FilmController(FilmService filmService) {
-        this.filmService = filmService;
+    public FilmController(FilmServiceImpl filmServiceImpl) {
+        this.filmServiceImpl = filmServiceImpl;
     }
 
     @GetMapping
     public List<Film> getAllFilms() {
-        return filmService.getAll();
+        return filmServiceImpl.getAll();
     }
 
     @PostMapping
     public Film createFilm(@Valid @RequestBody Film body) {
-        return filmService.create(body);
+        return filmServiceImpl.create(body);
     }
 
     @PutMapping
     public Film updateFilm(@Valid @RequestBody Film body) {
-        return filmService.update(body);
+        return filmServiceImpl.update(body);
     }
 
     @PutMapping("/{id}/like/{userId}")
     public void likeFilm(@PathVariable Long id, @PathVariable Long userId) {
-        filmService.likeFilm(id, userId);
+        filmServiceImpl.likeFilm(id, userId);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
     public void dislikeFilm(@PathVariable Long id, @PathVariable Long userId) {
-        filmService.dislikeFilm(id, userId);
+        filmServiceImpl.dislikeFilm(id, userId);
     }
 
     @GetMapping("/popular")
     public List<Film> getPopularFilmList(@RequestParam(defaultValue = "10") Long count) {
-        return filmService.getPopularFilms(count);
+        return filmServiceImpl.getPopularFilms(count);
     }
 
     @GetMapping("/{id}")
     public Film getFilmById(@PathVariable Long id) {
-        return filmService.getFilmById(id);
+        return filmServiceImpl.getFilmById(id);
     }
 }

@@ -10,22 +10,22 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Component
-public class GenreDbStorage implements CatalogStorage {
+public class RatingDbStorageImpl implements CatalogStorage {
     private final JdbcTemplate jdbcTemplate;
 
-    public GenreDbStorage(JdbcTemplate jdbcTemplate) {
+    public RatingDbStorageImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
     public List<Catalog> getAll() {
-        String sql = "SELECT * FROM genre;";
+        String sql = "SELECT * FROM rating;";
         return jdbcTemplate.query(sql, (rs, row) -> mapRow(rs));
     }
 
     @Override
     public Catalog getById(Long id) {
-        String sql = "SELECT * FROM genre WHERE id = ?;";
+        String sql = "SELECT * FROM rating WHERE id = ?";
         var result = jdbcTemplate.query(sql, (rs, row) -> mapRow(rs), id).stream().findFirst();
         if (result.isEmpty()) {
             throw new NotExistException(id.toString());

@@ -13,9 +13,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static ru.yandex.practicum.filmorate.utils.DefaultData.FILM_RELEASE_DATE;
 
 @SpringBootTest
-public class UserServiceTest {
+public class UserServiceImplTest {
     @Autowired
-    UserService userService;
+    UserServiceImpl userServiceImpl;
 
     private String getErrorMessage(String fullMsg) {
         return fullMsg.split(":")[1].substring(1);
@@ -25,7 +25,7 @@ public class UserServiceTest {
     void validateUserPositive() {
         User user = getDefaultUser();
 
-        assertDoesNotThrow(() -> userService.create(user));
+        assertDoesNotThrow(() -> userServiceImpl.create(user));
     }
 
     @Test
@@ -35,7 +35,7 @@ public class UserServiceTest {
 
         String expectedMsg = "Email должен быть корректным адресом электронной почты";
 
-        var result = assertThrows(ConstraintViolationException.class, () -> userService.create(user));
+        var result = assertThrows(ConstraintViolationException.class, () -> userServiceImpl.create(user));
         assertEquals(expectedMsg, getErrorMessage(result.getMessage()));
     }
 
@@ -46,7 +46,7 @@ public class UserServiceTest {
 
         String expectedMsg = "Необходимо указать login";
 
-        var result = assertThrows(ConstraintViolationException.class, () -> userService.create(user));
+        var result = assertThrows(ConstraintViolationException.class, () -> userServiceImpl.create(user));
         assertEquals(expectedMsg, getErrorMessage(result.getMessage()));
     }
 
@@ -57,7 +57,7 @@ public class UserServiceTest {
 
         String expectedMsg = "Необходимо указать login";
 
-        var result = assertThrows(ConstraintViolationException.class, () -> userService.create(user));
+        var result = assertThrows(ConstraintViolationException.class, () -> userServiceImpl.create(user));
         assertEquals(expectedMsg, getErrorMessage(result.getMessage()));
     }
 
@@ -68,7 +68,7 @@ public class UserServiceTest {
 
         String expectedMsg = "Логин не может быть пустым и содержать пробелы!";
 
-        var result = assertThrows(ValidationException.class, () -> userService.create(user));
+        var result = assertThrows(ValidationException.class, () -> userServiceImpl.create(user));
         assertEquals(expectedMsg, result.getMessage());
     }
 
@@ -79,7 +79,7 @@ public class UserServiceTest {
 
         String expectedMsg = "Дата рождения(birthday) не должна быть больше текущей";
 
-        var result = assertThrows(ConstraintViolationException.class, () -> userService.create(user));
+        var result = assertThrows(ConstraintViolationException.class, () -> userServiceImpl.create(user));
         assertEquals(expectedMsg, getErrorMessage(result.getMessage()));
     }
 

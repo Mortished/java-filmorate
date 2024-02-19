@@ -12,10 +12,10 @@ import java.util.List;
 
 @Component
 @Primary
-public class UserDbStorage implements UserStorage {
+public class UserDbStorageImpl implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
 
-    public UserDbStorage(JdbcTemplate jdbcTemplate) {
+    public UserDbStorageImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

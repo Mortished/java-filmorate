@@ -17,10 +17,10 @@ import java.util.List;
 
 @Component
 @Primary
-public class FilmDbStorage implements FilmStorage {
+public class FilmDbStorageImpl implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
 
-    public FilmDbStorage(JdbcTemplate jdbcTemplate) {
+    public FilmDbStorageImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

@@ -12,16 +12,16 @@ import static org.junit.jupiter.api.Assertions.*;
 import static ru.yandex.practicum.filmorate.utils.DefaultData.FILM_RELEASE_DATE;
 
 @SpringBootTest
-class FilmServiceTest {
+class FilmServiceImplTest {
 
     @Autowired
-    FilmService filmService;
+    FilmServiceImpl filmServiceImpl;
 
     @Test
     void validateFilmPositive() {
         Film film = getDefaultFilm();
 
-        assertDoesNotThrow(() -> filmService.create(film));
+        assertDoesNotThrow(() -> filmServiceImpl.create(film));
     }
 
     @Test
@@ -31,7 +31,7 @@ class FilmServiceTest {
 
         String expectedMsg = "Необходимо указать имя";
 
-        var result = assertThrows(ConstraintViolationException.class, () -> filmService.create(film));
+        var result = assertThrows(ConstraintViolationException.class, () -> filmServiceImpl.create(film));
         assertEquals(expectedMsg, getErrorMessage(result.getMessage()));
     }
 
@@ -42,7 +42,7 @@ class FilmServiceTest {
 
         String expectedMsg = "Необходимо указать имя";
 
-        var result = assertThrows(ConstraintViolationException.class, () -> filmService.create(film));
+        var result = assertThrows(ConstraintViolationException.class, () -> filmServiceImpl.create(film));
         assertEquals(expectedMsg, getErrorMessage(result.getMessage()));
     }
 
@@ -53,7 +53,7 @@ class FilmServiceTest {
 
         String expectedMsg = "Длинна описания (description) не может превышать 200 символов!";
 
-        var result = assertThrows(ConstraintViolationException.class, () -> filmService.create(film));
+        var result = assertThrows(ConstraintViolationException.class, () -> filmServiceImpl.create(film));
         assertEquals(expectedMsg, getErrorMessage(result.getMessage()));
     }
 
@@ -64,7 +64,7 @@ class FilmServiceTest {
 
         String expectedMsg = "Дата релиза (releaseDate) не может быть раньше 28.12.1895";
 
-        var result = assertThrows(ValidationException.class, () -> filmService.create(film));
+        var result = assertThrows(ValidationException.class, () -> filmServiceImpl.create(film));
         assertEquals(expectedMsg, result.getMessage());
     }
 
@@ -75,7 +75,7 @@ class FilmServiceTest {
 
         String expectedMsg = "Продолжительность фильма (duration) должна быть положительной";
 
-        var result = assertThrows(ConstraintViolationException.class, () -> filmService.create(film));
+        var result = assertThrows(ConstraintViolationException.class, () -> filmServiceImpl.create(film));
         assertEquals(expectedMsg, getErrorMessage(result.getMessage()));
     }
 

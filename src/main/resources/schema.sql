@@ -44,9 +44,9 @@ create table if not exists film_genre
     film_id  int not null,
     genre_id int not null,
     constraint FILM_GENRE_FILM_ID_FK
-        foreign key (film_id) references FILM,
+        foreign key (film_id) references FILM ON DELETE CASCADE,
     constraint FILM_GENRE_GENRE_ID_FK
-        foreign key (genre_id) references GENRE
+        foreign key (genre_id) references GENRE ON DELETE CASCADE
 );
 
 comment on table film_genre is 'Таблица развязки фильмов и их жанров';
@@ -71,9 +71,9 @@ create table if not exists favorite_films
     user_id int not null,
     film_id int not null,
     constraint FAVORITE_FILMS_FILM_ID_FK
-        foreign key (film_id) references FILM,
+        foreign key (film_id) references FILM ON DELETE CASCADE,
     constraint FAVORITE_FILMS_USERS_ID_FK
-        foreign key (user_id) references USERS
+        foreign key (user_id) references USERS ON DELETE CASCADE
 );
 
 comment on table favorite_films is 'Таблица развязки по избранным фильмам пользователя';
@@ -85,9 +85,9 @@ create table if not exists friendship
     user_to   int     not null,
     approved  boolean not null default false,
     constraint FRIENDSHIP_USERS_ID_FK
-        foreign key (user_from) references USERS,
+        foreign key (user_from) references USERS ON DELETE CASCADE,
     constraint FRIENDSHIP_USERS_ID_FK_2
-        foreign key (user_to) references USERS
+        foreign key (user_to) references USERS ON DELETE CASCADE
 );
 
 comment on table friendship is 'Таблица дружбы между пользователями';

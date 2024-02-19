@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.model.Catalog;
-import ru.yandex.practicum.filmorate.service.RatingService;
+import ru.yandex.practicum.filmorate.service.RatingServiceImpl;
 
 import java.util.List;
 
@@ -13,19 +13,19 @@ import java.util.List;
 @RequestMapping("/mpa")
 public class RatingController {
 
-    private final RatingService ratingService;
+    private final RatingServiceImpl ratingServiceImpl;
 
-    public RatingController(RatingService ratingService) {
-        this.ratingService = ratingService;
+    public RatingController(RatingServiceImpl ratingServiceImpl) {
+        this.ratingServiceImpl = ratingServiceImpl;
     }
 
     @GetMapping
     public List<Catalog> getAll() {
-        return ratingService.getAll();
+        return ratingServiceImpl.getAll();
     }
 
     @GetMapping("/{id}")
     public Catalog getById(@PathVariable Long id) {
-        return ratingService.getById(id);
+        return ratingServiceImpl.getById(id);
     }
 }

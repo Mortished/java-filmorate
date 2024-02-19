@@ -1,10 +1,13 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.jdbc.JdbcTestUtils;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
@@ -14,13 +17,25 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-public class UserDbStorageTest {
+public class UserDbStorageImplTest {
 
+    private final static String SQL = "ALTER TABLE users ALTER COLUMN id RESTART WITH 1";
     private final JdbcTemplate jdbcTemplate;
+    private UserDbStorageImpl userDbStorage;
+
+    @BeforeEach
+    void prepareData() {
+        userDbStorage = new UserDbStorageImpl(jdbcTemplate);
+        jdbcTemplate.update(SQL);
+    }
+
+    @AfterEach
+    void tearDown() {
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "users", "friendship");
+    }
 
     @Test
     public void getAll() {
-        UserDbStorage userDbStorage = new UserDbStorage(jdbcTemplate);
         var expected = List.of(getDefaultUser(), getSecondUser());
         expected.forEach(userDbStorage::save);
 
@@ -35,8 +50,6 @@ public class UserDbStorageTest {
 
     @Test
     public void save() {
-        UserDbStorage userDbStorage = new UserDbStorage(jdbcTemplate);
-
         var expected = getDefaultUser();
         userDbStorage.save(expected);
 
@@ -49,8 +62,6 @@ public class UserDbStorageTest {
 
     @Test
     public void update() {
-        UserDbStorage userDbStorage = new UserDbStorage(jdbcTemplate);
-
         var user = getDefaultUser();
         userDbStorage.save(user);
         var updatedUser = getSecondUser();
@@ -67,7 +78,6 @@ public class UserDbStorageTest {
 
     @Test
     public void getById() {
-        UserDbStorage userDbStorage = new UserDbStorage(jdbcTemplate);
         var expected = getDefaultUser();
         userDbStorage.save(expected);
 
@@ -80,7 +90,6 @@ public class UserDbStorageTest {
 
     @Test
     public void getUserFriendsAndAddFriend() {
-        UserDbStorage userDbStorage = new UserDbStorage(jdbcTemplate);
         var user = getDefaultUser();
         var friend = getSecondUser();
 
@@ -100,7 +109,6 @@ public class UserDbStorageTest {
 
     @Test
     public void removeFriend() {
-        UserDbStorage userDbStorage = new UserDbStorage(jdbcTemplate);
         var user = getDefaultUser();
         var friend = getSecondUser();
 
