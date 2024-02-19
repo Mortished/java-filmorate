@@ -1,12 +1,13 @@
-package ru.yandex.practicum.filmorate.service;
+package ru.yandex.practicum.filmorate.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import ru.yandex.practicum.filmorate.error.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.FilmDbStorageImpl;
-import ru.yandex.practicum.filmorate.storage.UserDbStorageImpl;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.impl.FilmDbStorageImpl;
+import ru.yandex.practicum.filmorate.storage.impl.UserDbStorageImpl;
 import ru.yandex.practicum.filmorate.utils.FilmIdGenerator;
 
 import javax.validation.Valid;

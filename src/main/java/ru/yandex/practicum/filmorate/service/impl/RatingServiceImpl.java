@@ -1,8 +1,9 @@
-package ru.yandex.practicum.filmorate.service;
+package ru.yandex.practicum.filmorate.service.impl;
 
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Catalog;
-import ru.yandex.practicum.filmorate.storage.RatingDbStorageImpl;
+import ru.yandex.practicum.filmorate.service.RatingService;
+import ru.yandex.practicum.filmorate.storage.impl.RatingDbStorageImpl;
 
 import java.util.List;
 

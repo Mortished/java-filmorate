@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage;
+package ru.yandex.practicum.filmorate.storage.impl;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.error.NotExistException;
 import ru.yandex.practicum.filmorate.model.Catalog;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
