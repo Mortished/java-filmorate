@@ -1,13 +1,13 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.jdbc.JdbcTestUtils;
+import org.springframework.test.annotation.DirtiesContext;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
@@ -15,23 +15,17 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@JdbcTest
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@SpringBootTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class UserDbStorageImplTest {
 
-    private final String sql = "ALTER TABLE users ALTER COLUMN id RESTART WITH 1";
     private final JdbcTemplate jdbcTemplate;
     private UserDbStorageImpl userDbStorage;
 
     @BeforeEach
     void prepareData() {
         userDbStorage = new UserDbStorageImpl(jdbcTemplate);
-        jdbcTemplate.update(sql);
-    }
-
-    @AfterEach
-    void tearDown() {
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "users", "friendship");
     }
 
     @Test
