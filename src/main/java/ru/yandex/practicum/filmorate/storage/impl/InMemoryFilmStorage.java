@@ -1,14 +1,15 @@
-package ru.yandex.practicum.filmorate.storage;
+package ru.yandex.practicum.filmorate.storage.impl;
 
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.error.NotExistException;
 import ru.yandex.practicum.filmorate.error.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
@@ -43,9 +44,6 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     public List<Film> getPopularFilms(Long count) {
-        return filmStorage.values().stream()
-                .sorted((o1, o2) -> o2.getUserLikes().size() - o1.getUserLikes().size())
-                .limit(count)
-                .collect(Collectors.toList());
+        return Collections.emptyList();
     }
 }

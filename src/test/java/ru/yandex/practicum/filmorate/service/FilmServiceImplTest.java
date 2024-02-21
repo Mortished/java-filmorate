@@ -2,9 +2,12 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import ru.yandex.practicum.filmorate.error.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.impl.FilmServiceImpl;
 
 import javax.validation.ConstraintViolationException;
 
@@ -12,16 +15,18 @@ import static org.junit.jupiter.api.Assertions.*;
 import static ru.yandex.practicum.filmorate.utils.DefaultData.FILM_RELEASE_DATE;
 
 @SpringBootTest
-class FilmServiceTest {
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
+class FilmServiceImplTest {
 
     @Autowired
-    FilmService filmService;
+    FilmServiceImpl filmServiceImpl;
 
     @Test
     void validateFilmPositive() {
         Film film = getDefaultFilm();
 
-        assertDoesNotThrow(() -> filmService.create(film));
+        assertDoesNotThrow(() -> filmServiceImpl.create(film));
     }
 
     @Test
@@ -31,7 +36,7 @@ class FilmServiceTest {
 
         String expectedMsg = "Необходимо указать имя";
 
-        var result = assertThrows(ConstraintViolationException.class, () -> filmService.create(film));
+        var result = assertThrows(ConstraintViolationException.class, () -> filmServiceImpl.create(film));
         assertEquals(expectedMsg, getErrorMessage(result.getMessage()));
     }
 
@@ -42,7 +47,7 @@ class FilmServiceTest {
 
         String expectedMsg = "Необходимо указать имя";
 
-        var result = assertThrows(ConstraintViolationException.class, () -> filmService.create(film));
+        var result = assertThrows(ConstraintViolationException.class, () -> filmServiceImpl.create(film));
         assertEquals(expectedMsg, getErrorMessage(result.getMessage()));
     }
 
@@ -53,7 +58,7 @@ class FilmServiceTest {
 
         String expectedMsg = "Длинна описания (description) не может превышать 200 символов!";
 
-        var result = assertThrows(ConstraintViolationException.class, () -> filmService.create(film));
+        var result = assertThrows(ConstraintViolationException.class, () -> filmServiceImpl.create(film));
         assertEquals(expectedMsg, getErrorMessage(result.getMessage()));
     }
 
@@ -64,7 +69,7 @@ class FilmServiceTest {
 
         String expectedMsg = "Дата релиза (releaseDate) не может быть раньше 28.12.1895";
 
-        var result = assertThrows(ValidationException.class, () -> filmService.create(film));
+        var result = assertThrows(ValidationException.class, () -> filmServiceImpl.create(film));
         assertEquals(expectedMsg, result.getMessage());
     }
 
@@ -75,12 +80,12 @@ class FilmServiceTest {
 
         String expectedMsg = "Продолжительность фильма (duration) должна быть положительной";
 
-        var result = assertThrows(ConstraintViolationException.class, () -> filmService.create(film));
+        var result = assertThrows(ConstraintViolationException.class, () -> filmServiceImpl.create(film));
         assertEquals(expectedMsg, getErrorMessage(result.getMessage()));
     }
 
     private Film getDefaultFilm() {
-        return new Film(1L, "name", "CegjxX2tfX776lj3f2NY6Wll5KGRlTbPYecErJeCxlDx9NErGgKyhJ2DwtFRJKOBMFdRaGPaOiWKK0VMd9SD3WXmjx0gOHQtPwoN8jYgOw60V8tLiXMeoJ6ea1QXAdHwXLhlwldAPB9lHPraQoQlZqoQfrycZiGBBFNSyv18WuvayZZlWy75AF02pZBDmSXYhlmUvlZK", FILM_RELEASE_DATE, 100L);
+        return new Film(1L, "name", "CegjxX2tfX776lj3f2NY6Wll5KGRlTbPYecErJeCxlDx9NErGgKyhJ2DwtFRJKOBMFdRaGPaOiWKK0VMd9SD3WXmjx0gOHQtPwoN8jYgOw60V8tLiXMeoJ6ea1QXAdHwXLhlwldAPB9lHPraQoQlZqoQfrycZiGBBFNSyv18WuvayZZlWy75AF02pZBDmSXYhlmUvlZK", FILM_RELEASE_DATE, 100L, null, null);
     }
 
     private String getErrorMessage(String fullMsg) {
