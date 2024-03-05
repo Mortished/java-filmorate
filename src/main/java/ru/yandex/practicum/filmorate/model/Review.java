@@ -2,24 +2,21 @@ package ru.yandex.practicum.filmorate.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
 
 @Data
 @AllArgsConstructor
 public class Review {
 
     private Long reviewId;
-    @NotNull
+    @NotNull(message = "Необходимо заполнить content")
     private String content;
-    @NotNull
+    @NotNull(message = "Необходимо заполнить isPositive")
     private Boolean isPositive;
-    @Positive
+    @NotNull(message = "Необходимо заполнить userId")
     private Long userId;
-    @Positive
+    @NotNull(message = "Необходимо заполнить filmId")
     private Long filmId;
     private Long useful;
 

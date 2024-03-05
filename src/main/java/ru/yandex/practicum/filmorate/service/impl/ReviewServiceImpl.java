@@ -52,26 +52,29 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public List<Review> getReviewList(Long filmId, Long count) {
-        return null;
+        if (filmId != -1L) {
+            filmService.getFilmById(filmId);
+        }
+        return reviewStorage.getReviewList(filmId, count);
     }
 
     @Override
     public void likeReview(Long reviewId, Long userId) {
-
+        reviewStorage.likeReview(reviewId, userId);
     }
 
     @Override
     public void dislikeReview(Long reviewId, Long userId) {
-
+        reviewStorage.dislikeReview(reviewId, userId);
     }
 
     @Override
     public void deleteReviewLike(Long reviewId, Long userId) {
-
+        reviewStorage.deleteReviewLike(reviewId, userId);
     }
 
     @Override
     public void deleteReviewDislike(Long reviewId, Long userId) {
-
+        reviewStorage.deleteReviewDislike(reviewId, userId);
     }
 }

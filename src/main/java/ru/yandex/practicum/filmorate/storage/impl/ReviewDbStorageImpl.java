@@ -14,11 +14,11 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Component
-public class ReviewDbStorage implements ReviewStorage {
+public class ReviewDbStorageImpl implements ReviewStorage {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public ReviewDbStorage(JdbcTemplate jdbcTemplate) {
+    public ReviewDbStorageImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -48,16 +48,13 @@ public class ReviewDbStorage implements ReviewStorage {
     public Review update(Review review) {
         String sql = "UPDATE REVIEWS\n" +
                 "SET CONTENT         = ?,\n" +
-                "    POSITIVE  = ?,\n" +
-                "    USER_ID = ?,\n" +
-                "    FILM_ID     = ?\n" +
+                "    POSITIVE  = ?\n" +
                 "WHERE REVIEW_ID = ?;";
 
         jdbcTemplate.update(sql,
                 review.getContent(),
                 review.getIsPositive(),
-                review.getUserId(),
-                review.getFilmId());
+                review.getReviewId());
 
         return getById(review.getReviewId());
     }
@@ -80,27 +77,47 @@ public class ReviewDbStorage implements ReviewStorage {
 
     @Override
     public List<Review> getReviewList(Long filmId, Long count) {
-        return null;
+        String sql = "SELECT * FROM REVIEWS \n";
+        if (filmId != -1L) {
+            sql += "WHERE film_id = ? \n" +
+                    "ORDER BY USEFUL desc \n" +
+                    "LIMIT ?";
+            return jdbcTemplate.query(sql, (rs, rowNum) -> makeReview(rs), filmId, count);
+        }
+
+        sql += "ORDER BY USEFUL desc \n" +
+                "LIMIT ?";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> makeReview(rs), count);
     }
 
     @Override
     public void likeReview(Long reviewId, Long userId) {
-
+        String sql = "INSERT INTO REVIEW_LIKES(REVIEW_ID, USER_ID, IS_LIKED) " +
+                "VALUES (?, ?, ?)";
+        jdbcTemplate.update(sql, reviewId, userId, Boolean.TRUE);
+        updateReviewUseful(reviewId);
     }
 
     @Override
     public void dislikeReview(Long reviewId, Long userId) {
-
+        String sql = "INSERT INTO REVIEW_LIKES(REVIEW_ID, USER_ID, IS_LIKED) " +
+                "VALUES (?, ?, ?)";
+        jdbcTemplate.update(sql, reviewId, userId, Boolean.FALSE);
+        updateReviewUseful(reviewId);
     }
 
     @Override
     public void deleteReviewLike(Long reviewId, Long userId) {
-
+        String sql = "DELETE FROM REVIEW_LIKES WHERE REVIEW_ID = ? and USER_ID = ?";
+        jdbcTemplate.update(sql, reviewId, userId);
+        updateReviewUseful(reviewId);
     }
 
     @Override
     public void deleteReviewDislike(Long reviewId, Long userId) {
-
+        String sql = "DELETE FROM REVIEW_LIKES WHERE REVIEW_ID = ? and USER_ID = ? and IS_LIKED = false";
+        jdbcTemplate.update(sql, reviewId, userId);
+        updateReviewUseful(reviewId);
     }
 
     private Review makeReview(ResultSet rs) throws SQLException {
@@ -113,4 +130,22 @@ public class ReviewDbStorage implements ReviewStorage {
                 rs.getLong("useful")
         );
     }
+
+    private void updateReviewUseful(Long reviewId) {
+        String sql = "SELECT sum(CASE\n" +
+                "               WHEN IS_LIKED = true THEN 1\n" +
+                "               WHEN IS_LIKED = false THEN -1\n" +
+                "    END) as score\n" +
+                "from REVIEW_LIKES\n" +
+                "WHERE REVIEW_ID = ?;";
+
+        var count = jdbcTemplate.query(sql, (rs, rowNum) -> rs.getLong("score"), reviewId).stream().findFirst().get();
+
+        String updateSql = "UPDATE REVIEWS\n" +
+                "SET USEFUL    = ?\n" +
+                "WHERE REVIEW_ID = ?;";
+
+        jdbcTemplate.update(updateSql, count, reviewId);
+    }
+
 }
