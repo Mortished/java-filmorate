@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
 import javax.validation.Valid;
@@ -21,4 +22,6 @@ public interface UserService {
     List<User> getCommonFriends(Long id, Long otherId);
 
     User getUserById(Long id);
+
+    List<Film> getRecommendations(Long userId);
 }

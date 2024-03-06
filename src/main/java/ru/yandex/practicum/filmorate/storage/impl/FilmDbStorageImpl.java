@@ -116,6 +116,23 @@ public class FilmDbStorageImpl implements FilmStorage {
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), count);
     }
 
+    @Override
+    public List<Film> getRecommendations(Long userId) {
+
+        String sqlQuery =
+                "SELECT *, r.id, r.name as rating_name FROM film AS f " +
+                        "JOIN rating AS r ON f.rating = r.id WHERE f.id IN (" +
+                        "SELECT film_id FROM favorite_films WHERE user_id IN (" +
+                        "SELECT ff.user_id FROM favorite_films AS ff " +
+                        "LEFT JOIN favorite_films AS ff2 ON ff2.film_id = ff.film_id " +
+                        "GROUP BY ff.user_id, ff2.user_id " +
+                        "HAVING ff.user_id IS NOT NULL AND ff.user_id != ? AND ff2.user_id = ? " +
+                        "ORDER BY COUNT(ff.user_id) DESC) AND film_id NOT IN (" +
+                        "SELECT film_id FROM favorite_films WHERE user_id = ?))";
+
+        return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs), userId, userId, userId);
+    }
+
     public void likeFilm(Long userId, Long filmId) {
         String sql = "INSERT INTO favorite_films(user_id, film_id)" +
                 "VALUES (?, ?)";
