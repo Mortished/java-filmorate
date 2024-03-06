@@ -85,6 +85,7 @@ public class UserDbStorageImplTest {
 
         assertThat(result)
                 .isNotNull()
+                .hasSize(1)
                 .usingRecursiveComparison()
                 .isEqualTo(expected);
     }

@@ -66,9 +66,8 @@ public class UserController {
         return userServiceImpl.getUserById(id);
     }
 
-    @DeleteMapping("/{id}")
-    public void removeUserById(@PathVariable Long id) {
-        userServiceImpl.remove(id);
+    @DeleteMapping("/{userId}")
+    public void removeUserById(@PathVariable Long userId) {
+        userServiceImpl.remove(userId);
     }
-
 }

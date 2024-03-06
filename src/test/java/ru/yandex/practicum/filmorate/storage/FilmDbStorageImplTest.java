@@ -88,6 +88,7 @@ public class FilmDbStorageImplTest {
 
         assertThat(result)
                 .isNotNull()
+                .hasSize(1)
                 .usingRecursiveComparison()
                 .isEqualTo(expected);
     }

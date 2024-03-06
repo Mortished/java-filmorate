@@ -76,13 +76,11 @@ public class UserDbStorageImpl implements UserStorage {
 
     @Override
     public List<User> getUserFriends(Long id) {
-        if (getUserById(id) == null) {
-            throw new NotFoundException();
-        }
+        getUserById(id);
         String sql = "SELECT *\n" +
                 "FROM users\n" +
                 "WHERE id IN (SELECT user_to FROM friendship WHERE user_from = ?);";
-        return  jdbcTemplate.query(sql, (rs, row) -> makeUser(rs), id);
+        return jdbcTemplate.query(sql, (rs, row) -> makeUser(rs), id);
     }
 
     public void addFriendship(Long userFrom, Long userTo) {
