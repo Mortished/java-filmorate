@@ -73,6 +73,23 @@ public class UserDbStorageImplTest {
     }
 
     @Test
+    public void remove() {
+        var expected = List.of(getDefaultUser());
+        var second = getSecondUser();
+        expected.forEach(userDbStorage::save);
+        userDbStorage.save(second);
+
+        userDbStorage.removeUserById(second.getId());
+
+        var result = userDbStorage.getAll();
+
+        assertThat(result)
+                .isNotNull()
+                .usingRecursiveComparison()
+                .isEqualTo(expected);
+    }
+
+    @Test
     public void getById() {
         var expected = getDefaultUser();
         userDbStorage.save(expected);

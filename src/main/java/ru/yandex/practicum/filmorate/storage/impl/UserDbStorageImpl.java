@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.error.NotExistException;
+import ru.yandex.practicum.filmorate.error.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -58,6 +59,12 @@ public class UserDbStorageImpl implements UserStorage {
     }
 
     @Override
+    public void removeUserById(Long id) {
+        String sql = "DELETE FROM users WHERE id = ?";
+        jdbcTemplate.update(sql, id);
+    }
+
+    @Override
     public User getUserById(Long id) {
         String sql = "SELECT * FROM users WHERE id = ?;";
         var result = jdbcTemplate.query(sql, (rs, rowNum) -> makeUser(rs), id).stream().findFirst();
@@ -69,10 +76,13 @@ public class UserDbStorageImpl implements UserStorage {
 
     @Override
     public List<User> getUserFriends(Long id) {
+        if (getUserById(id) == null) {
+            throw new NotFoundException();
+        }
         String sql = "SELECT *\n" +
                 "FROM users\n" +
                 "WHERE id IN (SELECT user_to FROM friendship WHERE user_from = ?);";
-        return jdbcTemplate.query(sql, (rs, row) -> makeUser(rs), id);
+        return  jdbcTemplate.query(sql, (rs, row) -> makeUser(rs), id);
     }
 
     public void addFriendship(Long userFrom, Long userTo) {
