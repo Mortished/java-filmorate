@@ -50,4 +50,9 @@ public class InMemoryFilmStorage implements FilmStorage {
     public List<Film> getPopularFilms(Long count) {
         return Collections.emptyList();
     }
+
+    @Override
+    public List<Film> getRecommendations(Long userId) {
+        return null;
+    }
 }

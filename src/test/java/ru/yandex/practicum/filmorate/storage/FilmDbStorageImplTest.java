@@ -124,6 +124,33 @@ public class FilmDbStorageImplTest {
                 .isEqualTo(expected);
     }
 
+    @Test
+    void getRecommendations() {
+
+        UserDbStorageImpl userStorage = new UserDbStorageImpl(jdbcTemplate);
+
+        userStorage.save(new User(1L, "mail@ya.ru",
+                "user01", "dude", LocalDate.of(1991,1,1)));
+
+        userStorage.save(new User(2L, "another@mail.ru",
+                "user02", "mikey", LocalDate.of(1991,1,1)));
+
+        storage.save(getDefaultFilm());
+        storage.save(getSecondFilm());
+
+        storage.likeFilm(1L, 1L);
+        storage.likeFilm(2L, 1L);
+        storage.likeFilm(1L, 2L);
+
+        List<Film> films = storage.getRecommendations(2L);
+
+        assertThat(films)
+                .isNotNull()
+                .hasSize(films.size())
+                .usingRecursiveComparison()
+                .isEqualTo(List.of(getSecondFilm()));
+    }
+
     private Film getDefaultFilm() {
         return new Film(1L, "firstFilm", "firstDescription", LocalDate.parse("2000-12-12"),
                 122L, getDefaultMpa(), List.of(getDefaultGenre()));
