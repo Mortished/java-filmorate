@@ -58,6 +58,12 @@ public class UserDbStorageImpl implements UserStorage {
     }
 
     @Override
+    public void removeUserById(Long id) {
+        String sql = "DELETE FROM users WHERE id = ?";
+        jdbcTemplate.update(sql, id);
+    }
+
+    @Override
     public User getUserById(Long id) {
         String sql = "SELECT * FROM users WHERE id = ?;";
         var result = jdbcTemplate.query(sql, (rs, rowNum) -> makeUser(rs), id).stream().findFirst();
@@ -69,6 +75,7 @@ public class UserDbStorageImpl implements UserStorage {
 
     @Override
     public List<User> getUserFriends(Long id) {
+        getUserById(id);
         String sql = "SELECT *\n" +
                 "FROM users\n" +
                 "WHERE id IN (SELECT user_to FROM friendship WHERE user_from = ?);";
