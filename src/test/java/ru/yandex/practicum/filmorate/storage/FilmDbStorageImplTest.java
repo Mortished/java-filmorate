@@ -127,7 +127,11 @@ public class FilmDbStorageImplTest {
 
         List<Film> films = storage.getRecommendations(2L);
 
-        assertEquals(1, films.size());
+        assertThat(films)
+                .isNotNull()
+                .hasSize(films.size())
+                .usingRecursiveComparison()
+                .isEqualTo(List.of(getSecondFilm()));
     }
 
     private Film getDefaultFilm() {
