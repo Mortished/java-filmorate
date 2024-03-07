@@ -18,6 +18,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -104,6 +105,29 @@ public class FilmDbStorageImplTest {
                 .hasSize(expected.size())
                 .usingRecursiveComparison()
                 .isEqualTo(expected);
+    }
+
+    @Test
+    void getRecommendations() {
+
+        UserDbStorageImpl userStorage = new UserDbStorageImpl(jdbcTemplate);
+
+        userStorage.save(new User(1L, "mail@ya.ru",
+                "user01", "dude", LocalDate.of(1991,1,1)));
+
+        userStorage.save(new User(2L, "another@mail.ru",
+                "user02", "mikey", LocalDate.of(1991,1,1)));
+
+        storage.save(getDefaultFilm());
+        storage.save(getSecondFilm());
+
+        storage.likeFilm(1L, 1L);
+        storage.likeFilm(2L, 1L);
+        storage.likeFilm(1L, 2L);
+
+        List<Film> films = storage.getRecommendations(2L);
+
+        assertEquals(1, films.size());
     }
 
     private Film getDefaultFilm() {
