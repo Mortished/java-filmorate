@@ -120,7 +120,7 @@ public class FilmDbStorageImpl implements FilmStorage {
     public List<Film> getRecommendations(Long userId) {
 
         String sqlQuery =
-                "SELECT *, r.id, r.name as rating_name FROM film AS f " +
+                "SELECT f.*, r.name as rating_name FROM film AS f " +
                         "JOIN rating AS r ON f.rating = r.id WHERE f.id IN (" +
                         "SELECT film_id FROM favorite_films WHERE user_id IN (" +
                         "SELECT ff.user_id FROM favorite_films AS ff " +
