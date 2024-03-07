@@ -13,6 +13,8 @@ public interface FilmService {
 
     Film update(@Valid Film film);
 
+    void remove(Long id);
+
     void likeFilm(Long filmId, Long userId);
 
     void dislikeFilm(Long filmId, Long userId);
