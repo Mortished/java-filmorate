@@ -33,6 +33,11 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
+    public void removeUserById(Long id) {
+
+    }
+
+    @Override
     public User getUserById(Long id) {
         User result = userStorage.get(id);
         return result;

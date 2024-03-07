@@ -28,5 +28,4 @@ public class GenreController {
         return genreServiceImpl.getById(id);
     }
 
-
 }

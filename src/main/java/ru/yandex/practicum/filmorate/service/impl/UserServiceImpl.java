@@ -50,6 +50,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void remove(Long id) {
+        userStorage.removeUserById(id);
+    }
+
+    @Override
     public void addFriend(Long userId, Long friendId) {
         userStorage.getUserById(userId);
         userStorage.getUserById(friendId);

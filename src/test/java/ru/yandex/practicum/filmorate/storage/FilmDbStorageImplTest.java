@@ -77,6 +77,24 @@ public class FilmDbStorageImplTest {
     }
 
     @Test
+    public void remove() {
+        var expected = List.of(getDefaultFilm());
+        var second = getSecondFilm();
+        expected.forEach(storage::save);
+        storage.save(second);
+
+        storage.removeFilmById(second.getId());
+
+        var result = storage.getAll();
+
+        assertThat(result)
+                .isNotNull()
+                .hasSize(1)
+                .usingRecursiveComparison()
+                .isEqualTo(expected);
+    }
+
+    @Test
     public void getById() {
         var expected = getDefaultFilm();
         storage.save(expected);
