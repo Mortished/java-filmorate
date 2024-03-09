@@ -13,7 +13,7 @@ import java.util.List;
 @RequestMapping(value = "/directors")
 @Slf4j
 public class DirectorController {
-    DirectorServiceImpl directorServiceImpl;
+    private final DirectorServiceImpl directorServiceImpl;
 
     public DirectorController(DirectorServiceImpl directorServiceImpl) {
         this.directorServiceImpl = directorServiceImpl;

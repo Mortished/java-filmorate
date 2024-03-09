@@ -60,8 +60,8 @@ public class FilmController {
     }
 
     @GetMapping("/director/{directorId}")
-    public List<Film> getDirectorFilms(@PathVariable(name = "directorId") Integer directorId,
+    public List<Film> getDirectorFilms(@PathVariable(name = "directorId") Long directorId,
                                        @RequestParam String sortBy) {
-        return filmServiceImpl.getDirectorFilms(directorId,sortBy);
+        return filmServiceImpl.getDirectorFilms(directorId, sortBy);
     }
 }

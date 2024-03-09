@@ -82,8 +82,8 @@ public class DirectorDbStorage implements DirectorStorage {
 
     @Override
     public void updateFilmDirectors(Long filmId, Set<Catalog> directors) {
-            jdbcTemplate.update("DELETE FROM film_directors WHERE film_id = ?", filmId);
-            addFilmDirectors(filmId, directors);
+        jdbcTemplate.update("DELETE FROM film_directors WHERE film_id = ?", filmId);
+        addFilmDirectors(filmId, directors);
     }
 
 
@@ -97,16 +97,16 @@ public class DirectorDbStorage implements DirectorStorage {
     public List<Film> getDirectorFilms(Long directorId, String sortBy) {
         getById(directorId);
         if (sortBy.equals("year")) {
-            return jdbcTemplate.query("SELECT f.id, f.name as name, description, release_date, " +
-                            "duration,  f.rating as mpa_rating_id, r.name as mpa_name " +
+            return jdbcTemplate.query("SELECT f.*, " +
+                            "r.name as mpa_name " +
                             "FROM film as f LEFT OUTER JOIN rating as r ON f.rating = r.id  " +
                             "WHERE f.id IN " +
                             "(SELECT DISTINCT film_id FROM film_directors WHERE director_id = ?) ORDER BY release_date",
                     (rs, rowNum) -> makeFilm(rs),
                     directorId);
         } else if (sortBy.equals("likes")) {
-            return jdbcTemplate.query("SELECT f.id, f.name as name, description, release_date, " +
-                            "duration,  f.rating as mpa_rating_id, r.name as mpa_name " +
+            return jdbcTemplate.query("SELECT f.*, " +
+                            "r.name as mpa_name " +
                             "FROM film as f " +
                             "LEFT OUTER JOIN rating as r ON f.rating = r.id  " +
                             "LEFT JOIN (SELECT COUNT(user_id) AS likes_amount, film_id as likes_film_id " +

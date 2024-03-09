@@ -14,7 +14,6 @@ import ru.yandex.practicum.filmorate.utils.FilmIdGenerator;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static ru.yandex.practicum.filmorate.utils.DefaultData.ENTITY_PROCESSED_SUCCESSFUL;
 import static ru.yandex.practicum.filmorate.utils.DefaultData.FILM_RELEASE_DATE;
@@ -88,14 +87,7 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public List<Film> getDirectorFilms(long directorId, String sortBy) {
-        return directorStorage.getDirectorFilms(directorId, sortBy).stream()
-                .peek(this::collectorFilm)
-                .collect(Collectors.toList());
-    }
-
-    private void collectorFilm(Film film) {
-        film.setGenres(genreStorage.getGenres(film.getId()));
-        film.setDirectors(directorStorage.getFilmDirectors(film.getId()));
+        return directorStorage.getDirectorFilms(directorId, sortBy);
     }
 
     private void validateFilm(@Valid Film film) {
