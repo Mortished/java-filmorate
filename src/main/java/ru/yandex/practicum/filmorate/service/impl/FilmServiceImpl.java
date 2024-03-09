@@ -59,6 +59,11 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
+    public void remove(Long id) {
+        filmStorage.removeFilmById(id);
+    }
+
+    @Override
     public void likeFilm(Long id, Long userId) {
         userStorage.getUserById(userId);
         filmStorage.getFilmById(id);
