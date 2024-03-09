@@ -82,9 +82,10 @@ public class DirectorDbStorage implements DirectorStorage {
 
     @Override
     public void updateFilmDirectors(Long filmId, Set<Catalog> directors) {
-        jdbcTemplate.update("DELETE FROM film_directors WHERE film_id = ?", filmId);
-        addFilmDirectors(filmId, directors);
+            jdbcTemplate.update("DELETE FROM film_directors WHERE film_id = ?", filmId);
+            addFilmDirectors(filmId, directors);
     }
+
 
     @Override
     public List<Catalog> getFilmDirectors(Long filmId) {

@@ -16,10 +16,10 @@ public interface DirectorStorage {
     Catalog update(Catalog catalog);
 
     void deleteById(Long id);
-    public void addFilmDirectors(Long filmId, Set<Catalog> directors);
-    public void updateFilmDirectors(Long filmId, Set<Catalog> directors);
+    void addFilmDirectors(Long filmId, Set<Catalog> directors);
+    void updateFilmDirectors(Long filmId, Set<Catalog> directors);
 
-    public List<Film> getDirectorFilms(Long directorId, String sortBy);
-    public List<Catalog> getFilmDirectors(Long filmId);
+    List<Film> getDirectorFilms(Long directorId, String sortBy);
+    List<Catalog> getFilmDirectors(Long filmId);
 
 }
