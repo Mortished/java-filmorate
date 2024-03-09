@@ -4,14 +4,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import ru.yandex.practicum.filmorate.error.ValidationException;
+import ru.yandex.practicum.filmorate.model.Catalog;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.DirectorStorage;
+import ru.yandex.practicum.filmorate.storage.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.impl.FilmDbStorageImpl;
 import ru.yandex.practicum.filmorate.storage.impl.UserDbStorageImpl;
 import ru.yandex.practicum.filmorate.utils.FilmIdGenerator;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static ru.yandex.practicum.filmorate.utils.DefaultData.ENTITY_PROCESSED_SUCCESSFUL;
 import static ru.yandex.practicum.filmorate.utils.DefaultData.FILM_RELEASE_DATE;
@@ -22,10 +26,16 @@ import static ru.yandex.practicum.filmorate.utils.DefaultData.FILM_RELEASE_DATE;
 public class FilmServiceImpl implements FilmService {
     private final FilmDbStorageImpl filmStorage;
     private final UserDbStorageImpl userStorage;
+    private final DirectorStorage directorStorage;
+    private final GenreStorage genreStorage;
 
-    public FilmServiceImpl(FilmDbStorageImpl filmStorage, UserDbStorageImpl userStorage) {
+
+    public FilmServiceImpl(FilmDbStorageImpl filmStorage, UserDbStorageImpl userStorage,
+                           DirectorStorage directorStorage, GenreStorage genreStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
+        this.directorStorage = directorStorage;
+        this.genreStorage = genreStorage;
     }
 
     @Override
@@ -70,6 +80,18 @@ public class FilmServiceImpl implements FilmService {
     @Override
     public Film getFilmById(Long id) {
         return filmStorage.getFilmById(id);
+    }
+
+    @Override
+    public List<Film> getDirectorFilms(long directorId, String sortBy) {
+        return directorStorage.getDirectorFilms(directorId, sortBy).stream()
+                .peek(this::collectorFilm)
+                .collect(Collectors.toList());
+    }
+
+    private void collectorFilm(Film film) {
+        film.setGenres(genreStorage.getGenres(film.getId()));
+        film.setDirectors(directorStorage.getFilmDirectors(film.getId()));
     }
 
     private void validateFilm(@Valid Film film) {

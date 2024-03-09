@@ -14,6 +14,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -58,6 +59,9 @@ public class FilmDbStorageImpl implements FilmStorage {
         if (film.getGenres() != null && !film.getGenres().isEmpty()) {
             updateGenres(id, film.getGenres());
         }
+        if (film.getDirectors() != null && !film.getDirectors().isEmpty()) {
+            updateFilmDirectors(id,film.getDirectors());
+        }
 
         return film;
     }
@@ -87,7 +91,20 @@ public class FilmDbStorageImpl implements FilmStorage {
             deleteGenres(film.getId());
             updateGenres(film.getId(), film.getGenres());
         }
+
+        if (film.getDirectors() == null || film.getDirectors().isEmpty()) {
+            deleteFilmDirectors(film.getId());
+        } else {
+            deleteFilmDirectors(film.getId());
+            updateFilmDirectors(film.getId(), film.getDirectors());
+        }
         return getFilmById(film.getId());
+    }
+
+    @Override
+    public void removeFilmById(Long id) {
+        String sql = "DELETE FROM film WHERE id = ?";
+        jdbcTemplate.update(sql, id);
     }
 
     @Override
@@ -116,6 +133,23 @@ public class FilmDbStorageImpl implements FilmStorage {
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), count);
     }
 
+    @Override
+    public List<Film> getRecommendations(Long userId) {
+
+        String sqlQuery =
+                "SELECT f.*, r.name as rating_name FROM film AS f " +
+                        "JOIN rating AS r ON f.rating = r.id WHERE f.id IN (" +
+                        "SELECT film_id FROM favorite_films WHERE user_id IN (" +
+                        "SELECT ff.user_id FROM favorite_films AS ff " +
+                        "LEFT JOIN favorite_films AS ff2 ON ff2.film_id = ff.film_id " +
+                        "GROUP BY ff.user_id, ff2.user_id " +
+                        "HAVING ff.user_id IS NOT NULL AND ff.user_id != ? AND ff2.user_id = ? " +
+                        "ORDER BY COUNT(ff.user_id) DESC) AND film_id NOT IN (" +
+                        "SELECT film_id FROM favorite_films WHERE user_id = ?))";
+
+        return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs), userId, userId, userId);
+    }
+
     public void likeFilm(Long userId, Long filmId) {
         String sql = "INSERT INTO favorite_films(user_id, film_id)" +
                 "VALUES (?, ?)";
@@ -132,6 +166,16 @@ public class FilmDbStorageImpl implements FilmStorage {
         genres.forEach(genreId -> jdbcTemplate.update(secondSql, filmId, genreId.getId()));
     }
 
+    private void updateFilmDirectors(Long filmId, List<Catalog> directors) {
+        String sqlQuery = "INSERT INTO film_directors VALUES(?, ?);";
+        directors.forEach(directorId -> jdbcTemplate.update(sqlQuery,filmId,directorId.getId()));
+    }
+
+    private void deleteFilmDirectors(Long filmId) {
+        String sql = "DELETE FROM film_directors WHERE film_id = ?;";
+        jdbcTemplate.update(sql, filmId);
+    }
+
     private void deleteGenres(Long filmId) {
         String sql = "DELETE FROM film_genre WHERE film_id = ?;";
         jdbcTemplate.update(sql, filmId);
@@ -145,10 +189,16 @@ public class FilmDbStorageImpl implements FilmStorage {
                 rs.getDate("release_date").toLocalDate(),
                 rs.getLong("duration"),
                 new Catalog(rs.getLong("rating"), rs.getString("rating_name")),
-                getFilmGenres(rs.getLong("id"))
+                getFilmGenres(rs.getLong("id")),
+                getFilmDirectors(rs.getLong("id"))
         );
     }
 
+    private List<Catalog> getFilmDirectors(Long filmId) {
+        String sqlQuery = "SELECT * FROM directors WHERE id IN " +
+                "(SELECT director_id FROM film_directors WHERE film_id = ?)";
+        return new ArrayList<>(jdbcTemplate.query(sqlQuery,(rs, row) -> mapRow(rs),filmId));
+    }
     private List<Catalog> getFilmGenres(Long filmId) {
         String sql = "SELECT * FROM genre g " +
                 "WHERE id IN (SELECT genre_id FROM film_genre WHERE film_id = ?);";

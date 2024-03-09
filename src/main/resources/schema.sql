@@ -1,3 +1,12 @@
+DROP TABLE IF EXISTS genre CASCADE;
+DROP TABLE IF EXISTS rating CASCADE;
+DROP TABLE IF EXISTS film CASCADE;
+DROP TABLE IF EXISTS film_genre CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS favorite_films CASCADE;
+DROP TABLE IF EXISTS friendship CASCADE;
+DROP TABLE IF EXISTS reviews CASCADE;
+DROP TABLE IF EXISTS review_likes CASCADE;
 --GENRE
 create table if not exists genre
 (
@@ -91,3 +100,50 @@ create table if not exists friendship
 );
 
 comment on table friendship is 'Таблица дружбы между пользователями';
+
+---DIRECTORS
+create table if not exists directors
+(
+    id  INTEGER auto_increment primary key,
+    name varchar(40) not null
+);
+
+comment on table directors is 'Таблица с данными режиссеров';
+
+create table IF not exists film_directors
+(
+    film_id     INTEGER REFERENCES film (id) ON delete CASCADE,
+    director_id INTEGER REFERENCES directors (id) ON delete CASCADE
+);
+
+--REVIEW
+create table if not exists reviews
+(
+    review_id INTEGER auto_increment,
+    content   varchar not null,
+    positive  boolean not null,
+    user_Id   INTEGER not null,
+    film_Id   INTEGER not null,
+    useful    INTEGER not null default  0,
+    constraint reviews_pk
+        primary key (review_id),
+    constraint reviews_FILM_ID_fk
+        foreign key (film_Id) references FILM ON DELETE CASCADE,
+    constraint reviews_USERS_ID_fk
+        foreign key (user_Id) references USERS ON DELETE CASCADE
+);
+
+comment on table reviews is 'Таблица с отзывами о фильмах';
+
+create table if not exists review_likes
+(
+    review_Id INTEGER not null,
+    user_id   INTEGER not null,
+    is_liked  boolean not null,
+    constraint review_likes_REVIEWS_REVIEW_ID_fk
+        foreign key (review_Id) references REVIEWS ON DELETE CASCADE,
+    constraint review_likes_USERS_ID_fk
+        foreign key (user_id) references USERS ON DELETE CASCADE
+);
+
+comment on table review_likes is 'Таблица для оценки отзывов пользователями';

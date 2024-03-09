@@ -4,9 +4,11 @@ import ru.yandex.practicum.filmorate.model.Catalog;
 
 import java.util.List;
 
-public interface CatalogStorage {
+public interface GenreStorage {
+
     List<Catalog> getAll();
 
     Catalog getById(Long id);
 
+    public List<Catalog> getGenres(Long filmID);
 }
