@@ -60,7 +60,7 @@ public class FilmDbStorageImpl implements FilmStorage {
             updateGenres(id, film.getGenres());
         }
         if (film.getDirectors() != null && !film.getDirectors().isEmpty()) {
-            updateFilmDirectors(id,film.getDirectors());
+            updateFilmDirectors(id, film.getDirectors());
         }
 
         return film;
@@ -168,7 +168,7 @@ public class FilmDbStorageImpl implements FilmStorage {
 
     private void updateFilmDirectors(Long filmId, List<Catalog> directors) {
         String sqlQuery = "INSERT INTO film_directors VALUES(?, ?);";
-        directors.forEach(directorId -> jdbcTemplate.update(sqlQuery,filmId,directorId.getId()));
+        directors.forEach(directorId -> jdbcTemplate.update(sqlQuery, filmId, directorId.getId()));
     }
 
     private void deleteFilmDirectors(Long filmId) {
@@ -197,8 +197,9 @@ public class FilmDbStorageImpl implements FilmStorage {
     private List<Catalog> getFilmDirectors(Long filmId) {
         String sqlQuery = "SELECT * FROM directors WHERE id IN " +
                 "(SELECT director_id FROM film_directors WHERE film_id = ?)";
-        return new ArrayList<>(jdbcTemplate.query(sqlQuery,(rs, row) -> mapRow(rs),filmId));
+        return new ArrayList<>(jdbcTemplate.query(sqlQuery, (rs, row) -> mapRow(rs), filmId));
     }
+
     private List<Catalog> getFilmGenres(Long filmId) {
         String sql = "SELECT * FROM genre g " +
                 "WHERE id IN (SELECT genre_id FROM film_genre WHERE film_id = ?);";
