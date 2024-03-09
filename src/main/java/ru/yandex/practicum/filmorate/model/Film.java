@@ -28,5 +28,6 @@ public class Film {
     private Long duration;
     private Catalog mpa;
     private List<Catalog> genres;
+    private List<Catalog> directors;
 
 }

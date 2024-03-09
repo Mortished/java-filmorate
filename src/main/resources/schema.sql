@@ -7,6 +7,8 @@ DROP TABLE IF EXISTS favorite_films CASCADE;
 DROP TABLE IF EXISTS friendship CASCADE;
 DROP TABLE IF EXISTS reviews CASCADE;
 DROP TABLE IF EXISTS review_likes CASCADE;
+DROP TABLE IF EXISTS directors CASCADE;
+DROP TABLE IF EXISTS film_directors CASCADE;
 --GENRE
 create table if not exists genre
 (
@@ -132,3 +134,18 @@ create table if not exists review_likes
 );
 
 comment on table review_likes is 'Таблица для оценки отзывов пользователями';
+
+---DIRECTORS
+create table if not exists directors
+(
+    id  INTEGER auto_increment primary key,
+    name varchar(40) not null
+);
+
+comment on table directors is 'Таблица с данными режиссеров';
+
+create table IF not exists film_directors
+(
+    film_id     INTEGER REFERENCES film (id) ON delete CASCADE,
+    director_id INTEGER REFERENCES directors (id) ON delete CASCADE
+);

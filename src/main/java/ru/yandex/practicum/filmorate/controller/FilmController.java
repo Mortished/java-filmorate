@@ -58,4 +58,10 @@ public class FilmController {
     public void removeFilmById(@PathVariable Long filmId) {
         filmServiceImpl.remove(filmId);
     }
+
+    @GetMapping("/director/{directorId}")
+    public List<Film> getDirectorFilms(@PathVariable(name = "directorId") Long directorId,
+                                       @RequestParam String sortBy) {
+        return filmServiceImpl.getDirectorFilms(directorId, sortBy);
+    }
 }
