@@ -45,7 +45,7 @@ public class GenreDbStorageImpl implements GenreStorage {
                 "FROM film_genre AS fg " +
                 "LEFT OUTER JOIN genre AS g ON g.id = fg.genre_id " +
                 "WHERE fg.film_id = ? " +
-                "ORDER BY g.id",(rs, row) -> mapRow(rs), filmID));
+                "ORDER BY g.id", (rs, row) -> mapRow(rs), filmID));
         return new ArrayList<>(genres);
     }
 

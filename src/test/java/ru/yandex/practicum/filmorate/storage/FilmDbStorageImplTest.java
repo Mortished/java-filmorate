@@ -117,7 +117,7 @@ public class FilmDbStorageImplTest {
         storage.likeFilm(1L, 1L);
 
         var expected = List.of(savedFilm, secondSavedFilm);
-        var result = storage.getPopularFilms(10L);
+        var result = storage.getPopularFilms(10L, null, null);
 
         assertThat(result)
                 .isNotNull()
@@ -132,10 +132,10 @@ public class FilmDbStorageImplTest {
         UserDbStorageImpl userStorage = new UserDbStorageImpl(jdbcTemplate);
 
         userStorage.save(new User(1L, "mail@ya.ru",
-                "user01", "dude", LocalDate.of(1991,1,1)));
+                "user01", "dude", LocalDate.of(1991, 1, 1)));
 
         userStorage.save(new User(2L, "another@mail.ru",
-                "user02", "mikey", LocalDate.of(1991,1,1)));
+                "user02", "mikey", LocalDate.of(1991, 1, 1)));
 
         storage.save(getDefaultFilm());
         storage.save(getSecondFilm());

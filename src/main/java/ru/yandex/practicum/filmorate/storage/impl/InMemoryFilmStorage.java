@@ -47,7 +47,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         return result;
     }
 
-    public List<Film> getPopularFilms(Long count) {
+    public List<Film> getPopularFilms(Long count, Long genreId, Integer year) {
         return Collections.emptyList();
     }
 

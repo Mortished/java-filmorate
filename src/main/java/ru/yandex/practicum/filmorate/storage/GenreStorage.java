@@ -10,5 +10,5 @@ public interface GenreStorage {
 
     Catalog getById(Long id);
 
-    public List<Catalog> getGenres(Long filmID);
+    List<Catalog> getGenres(Long filmID);
 }

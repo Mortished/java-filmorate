@@ -7,7 +7,6 @@ import ru.yandex.practicum.filmorate.error.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.storage.DirectorStorage;
-import ru.yandex.practicum.filmorate.storage.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.impl.FilmDbStorageImpl;
 import ru.yandex.practicum.filmorate.storage.impl.UserDbStorageImpl;
 import ru.yandex.practicum.filmorate.utils.FilmIdGenerator;
@@ -25,15 +24,13 @@ public class FilmServiceImpl implements FilmService {
     private final FilmDbStorageImpl filmStorage;
     private final UserDbStorageImpl userStorage;
     private final DirectorStorage directorStorage;
-    private final GenreStorage genreStorage;
 
 
     public FilmServiceImpl(FilmDbStorageImpl filmStorage, UserDbStorageImpl userStorage,
-                           DirectorStorage directorStorage, GenreStorage genreStorage) {
+                           DirectorStorage directorStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
         this.directorStorage = directorStorage;
-        this.genreStorage = genreStorage;
     }
 
     @Override
@@ -76,8 +73,8 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
-    public List<Film> getPopularFilms(Long count) {
-        return filmStorage.getPopularFilms(count);
+    public List<Film> getPopularFilms(Long count, Long genreId, Integer year) {
+        return filmStorage.getPopularFilms(count, genreId, year);
     }
 
     @Override
