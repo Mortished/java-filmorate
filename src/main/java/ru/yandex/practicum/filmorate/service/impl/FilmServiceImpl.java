@@ -25,15 +25,13 @@ public class FilmServiceImpl implements FilmService {
     private final FilmDbStorageImpl filmStorage;
     private final UserDbStorageImpl userStorage;
     private final DirectorStorage directorStorage;
-    private final GenreStorage genreStorage;
 
 
     public FilmServiceImpl(FilmDbStorageImpl filmStorage, UserDbStorageImpl userStorage,
-                           DirectorStorage directorStorage, GenreStorage genreStorage) {
+                           DirectorStorage directorStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
         this.directorStorage = directorStorage;
-        this.genreStorage = genreStorage;
     }
 
     @Override
@@ -76,8 +74,8 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
-    public List<Film> getPopularFilms(Long count) {
-        return filmStorage.getPopularFilms(count);
+    public List<Film> getPopularFilms(Long count, Long genreId, Integer year) {
+        return filmStorage.getPopularFilms(count, genreId, year);
     }
 
     @Override

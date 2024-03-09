@@ -177,6 +177,6 @@ public class ReviewDbStorageImplTest {
     }
 
     private Film getDefaultFilm() {
-        return new Film(1L, "name", "desc", FILM_RELEASE_DATE, 100L, null, null,null);
+        return new Film(1L, "name", "desc", FILM_RELEASE_DATE, 100L, null, null, null);
     }
 }

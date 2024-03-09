@@ -9,6 +9,7 @@ DROP TABLE IF EXISTS reviews CASCADE;
 DROP TABLE IF EXISTS review_likes CASCADE;
 DROP TABLE IF EXISTS directors CASCADE;
 DROP TABLE IF EXISTS film_directors CASCADE;
+
 --GENRE
 create table if not exists genre
 (
