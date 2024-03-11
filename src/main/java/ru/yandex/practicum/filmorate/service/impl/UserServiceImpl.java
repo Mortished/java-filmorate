@@ -4,10 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import ru.yandex.practicum.filmorate.error.ValidationException;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.impl.EventDbStorage;
 import ru.yandex.practicum.filmorate.storage.impl.UserDbStorageImpl;
 import ru.yandex.practicum.filmorate.utils.UserIdGenerator;
 
@@ -22,10 +22,12 @@ import static ru.yandex.practicum.filmorate.utils.DefaultData.ENTITY_PROCESSED_S
 public class UserServiceImpl implements UserService {
     private final UserDbStorageImpl userStorage;
     private final FilmStorage filmStorage;
+    private final EventDbStorage eventStorage;
 
-    public UserServiceImpl(UserDbStorageImpl userStorage, FilmStorage filmStorage) {
+    public UserServiceImpl(UserDbStorageImpl userStorage, FilmStorage filmStorage, EventDbStorage eventStorage) {
         this.userStorage = userStorage;
         this.filmStorage = filmStorage;
+        this.eventStorage = eventStorage;
     }
 
     @Override
@@ -59,6 +61,8 @@ public class UserServiceImpl implements UserService {
         userStorage.getUserById(userId);
         userStorage.getUserById(friendId);
         userStorage.addFriendship(userId, friendId);
+        eventStorage.addEvent(new Event(userId, EventType.FRIEND, EventOperation.ADD, friendId));
+
     }
 
     @Override
@@ -66,6 +70,7 @@ public class UserServiceImpl implements UserService {
         userStorage.getUserById(userId);
         userStorage.getUserById(friendId);
         userStorage.removeFriendship(userId, friendId);
+        eventStorage.addEvent(new Event(userId, EventType.FRIEND, EventOperation.REMOVE, friendId));
     }
 
     @Override
