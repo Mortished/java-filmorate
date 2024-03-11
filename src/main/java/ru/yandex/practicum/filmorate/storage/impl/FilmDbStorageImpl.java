@@ -14,6 +14,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -58,6 +59,9 @@ public class FilmDbStorageImpl implements FilmStorage {
         if (film.getGenres() != null && !film.getGenres().isEmpty()) {
             updateGenres(id, film.getGenres());
         }
+        if (film.getDirectors() != null && !film.getDirectors().isEmpty()) {
+            updateFilmDirectors(id, film.getDirectors());
+        }
 
         return film;
     }
@@ -87,6 +91,13 @@ public class FilmDbStorageImpl implements FilmStorage {
             deleteGenres(film.getId());
             updateGenres(film.getId(), film.getGenres());
         }
+
+        if (film.getDirectors() == null || film.getDirectors().isEmpty()) {
+            deleteFilmDirectors(film.getId());
+        } else {
+            deleteFilmDirectors(film.getId());
+            updateFilmDirectors(film.getId(), film.getDirectors());
+        }
         return getFilmById(film.getId());
     }
 
@@ -111,15 +122,31 @@ public class FilmDbStorageImpl implements FilmStorage {
     }
 
     @Override
-    public List<Film> getPopularFilms(Long count) {
-        String sql = "select f.*, r.name as rating_name\n" +
-                "from film f\n" +
-                "         join rating r on f.rating = r.id\n" +
-                "         left join favorite_films ff on f.id = ff.film_id\n" +
-                "group by f.id\n" +
-                "order by count(ff.film_id) desc\n" +
-                "limit ?;";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), count);
+    public List<Film> getPopularFilms(Long count, Long genreId, Integer year) {
+        List<Film> popularFilms;
+        String yearFilter = "WHERE YEAR(f.release_date) = ? ";
+        String genreFilter = "WHERE fg.genre_id = ? ";
+        String genreJoin = "JOIN film_genre fg ON f.id = fg.film_id ";
+        String genreAndYearFilter = "WHERE fg.genre_id = ? AND YEAR(f.release_date) = ? ";
+        StringBuilder sql = new StringBuilder("SELECT f.*, r.name as rating_name\n" +
+                "FROM film f JOIN rating r ON f.rating = r.id\n" +
+                "LEFT JOIN favorite_films ff on f.id = ff.film_id ");
+        String sqlEnd = "GROUP BY f.id ORDER BY count(ff.film_id) DESC LIMIT ?";
+
+        if (genreId == null && year == null) {
+            String sqlString = sql.append(sqlEnd).toString();
+            popularFilms = jdbcTemplate.query(sqlString, (rs, rowNum) -> makeFilm(rs), count);
+        } else if (genreId == null) {
+            String sqlString = sql.append(yearFilter).append(sqlEnd).toString();
+            popularFilms = jdbcTemplate.query(sqlString, (rs, rowNum) -> makeFilm(rs), year, count);
+        } else if (year == null) {
+            String sqlString = sql.append(genreJoin).append(genreFilter).append(sqlEnd).toString();
+            popularFilms = jdbcTemplate.query(sqlString, (rs, rowNum) -> makeFilm(rs), genreId, count);
+        } else {
+            String sqlString = sql.append(genreJoin).append(genreAndYearFilter).append(sqlEnd).toString();
+            popularFilms = jdbcTemplate.query(sqlString, (rs, rowNum) -> makeFilm(rs), genreId, year, count);
+        }
+        return popularFilms;
     }
 
     @Override
@@ -155,6 +182,16 @@ public class FilmDbStorageImpl implements FilmStorage {
         genres.forEach(genreId -> jdbcTemplate.update(secondSql, filmId, genreId.getId()));
     }
 
+    private void updateFilmDirectors(Long filmId, List<Catalog> directors) {
+        String sqlQuery = "INSERT INTO film_directors VALUES(?, ?);";
+        directors.forEach(directorId -> jdbcTemplate.update(sqlQuery, filmId, directorId.getId()));
+    }
+
+    private void deleteFilmDirectors(Long filmId) {
+        String sql = "DELETE FROM film_directors WHERE film_id = ?;";
+        jdbcTemplate.update(sql, filmId);
+    }
+
     private void deleteGenres(Long filmId) {
         String sql = "DELETE FROM film_genre WHERE film_id = ?;";
         jdbcTemplate.update(sql, filmId);
@@ -168,8 +205,15 @@ public class FilmDbStorageImpl implements FilmStorage {
                 rs.getDate("release_date").toLocalDate(),
                 rs.getLong("duration"),
                 new Catalog(rs.getLong("rating"), rs.getString("rating_name")),
-                getFilmGenres(rs.getLong("id"))
+                getFilmGenres(rs.getLong("id")),
+                getFilmDirectors(rs.getLong("id"))
         );
+    }
+
+    private List<Catalog> getFilmDirectors(Long filmId) {
+        String sqlQuery = "SELECT * FROM directors WHERE id IN " +
+                "(SELECT director_id FROM film_directors WHERE film_id = ?)";
+        return new ArrayList<>(jdbcTemplate.query(sqlQuery, (rs, row) -> mapRow(rs), filmId));
     }
 
     private List<Catalog> getFilmGenres(Long filmId) {

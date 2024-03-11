@@ -11,6 +11,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import ru.yandex.practicum.filmorate.model.Catalog;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.impl.DirectorDbStorage;
 import ru.yandex.practicum.filmorate.storage.impl.FilmDbStorageImpl;
 import ru.yandex.practicum.filmorate.storage.impl.UserDbStorageImpl;
 
@@ -27,11 +28,12 @@ public class FilmDbStorageImplTest {
 
     private final JdbcTemplate jdbcTemplate;
     private FilmDbStorageImpl storage;
+    private DirectorDbStorage directorDbStorage;
 
     @BeforeEach
     void prepareData() {
         storage = new FilmDbStorageImpl(jdbcTemplate);
-
+        directorDbStorage = new DirectorDbStorage(jdbcTemplate);
     }
 
     @Test
@@ -109,13 +111,13 @@ public class FilmDbStorageImplTest {
     public void getPopularFilms() {
         UserDbStorageImpl userDbStorage = new UserDbStorageImpl(jdbcTemplate);
 
-        storage.save(getDefaultFilm());
-        storage.save(getSecondFilm());
+        Film savedFilm = storage.save(getDefaultFilm());
+        Film secondSavedFilm = storage.save(getSecondFilm());
         userDbStorage.save(new User(1L, "first@email.ru", "firstLogin", "firstName", LocalDate.parse("2000-01-01")));
-        storage.likeFilm(1L, 2L);
+        storage.likeFilm(1L, 1L);
 
-        var expected = List.of(getSecondFilm(), getDefaultFilm());
-        var result = storage.getPopularFilms(10L);
+        var expected = List.of(savedFilm, secondSavedFilm);
+        var result = storage.getPopularFilms(10L, null, null);
 
         assertThat(result)
                 .isNotNull()
@@ -130,10 +132,10 @@ public class FilmDbStorageImplTest {
         UserDbStorageImpl userStorage = new UserDbStorageImpl(jdbcTemplate);
 
         userStorage.save(new User(1L, "mail@ya.ru",
-                "user01", "dude", LocalDate.of(1991,1,1)));
+                "user01", "dude", LocalDate.of(1991, 1, 1)));
 
         userStorage.save(new User(2L, "another@mail.ru",
-                "user02", "mikey", LocalDate.of(1991,1,1)));
+                "user02", "mikey", LocalDate.of(1991, 1, 1)));
 
         storage.save(getDefaultFilm());
         storage.save(getSecondFilm());
@@ -153,12 +155,13 @@ public class FilmDbStorageImplTest {
 
     private Film getDefaultFilm() {
         return new Film(1L, "firstFilm", "firstDescription", LocalDate.parse("2000-12-12"),
-                122L, getDefaultMpa(), List.of(getDefaultGenre()));
+                122L, getDefaultMpa(), List.of(getDefaultGenre()), List.of(getDefaultDirector()));
     }
 
     private Film getSecondFilm() {
         return new Film(2L, "secondFilm", "secondDescription", LocalDate.parse("2010-01-01"),
-                99L, new Catalog(1L, "G"), List.of(new Catalog(3L, "Мультфильм")));
+                99L, new Catalog(1L, "G"), List.of(new Catalog(3L, "Мультфильм")),
+                List.of(new Catalog(1L, "director")));
     }
 
     private Catalog getDefaultMpa() {
@@ -167,6 +170,12 @@ public class FilmDbStorageImplTest {
 
     private Catalog getDefaultGenre() {
         return new Catalog(2L, "Драма");
+    }
+
+    private Catalog getDefaultDirector() {
+        Catalog catalog = new Catalog(1L, "director");
+        Catalog savedDirector = directorDbStorage.save(catalog);
+        return directorDbStorage.getById(savedDirector.getId());
     }
 
 }

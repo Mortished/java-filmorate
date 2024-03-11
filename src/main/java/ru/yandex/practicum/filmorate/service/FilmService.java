@@ -19,7 +19,9 @@ public interface FilmService {
 
     void dislikeFilm(Long filmId, Long userId);
 
-    List<Film> getPopularFilms(Long count);
+    List<Film> getPopularFilms(Long count, Long genreId, Integer year);
 
     Film getFilmById(Long id);
+
+    List<Film> getDirectorFilms(long directorId, String sortBy);
 }
