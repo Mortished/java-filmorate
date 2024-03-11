@@ -39,7 +39,7 @@ public class EventServiceTest {
 
         Film film = new Film(1L, "Film", "something",
                 LocalDate.of(2000,1,1), 120L,
-                new Catalog(3L, "PG-13"), List.of(new Catalog(2L, "Драма")));
+                new Catalog(3L, "PG-13"), List.of(new Catalog(2L, "Драма")), null);
 
 
         filmService.create(film);

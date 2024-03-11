@@ -38,6 +38,7 @@ public class FilmServiceImpl implements FilmService {
         this.userStorage = userStorage;
         this.directorStorage = directorStorage;
         this.eventStorage = eventStorage;
+    }
 
 
     @Override
