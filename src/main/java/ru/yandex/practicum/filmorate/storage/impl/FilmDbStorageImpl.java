@@ -116,6 +116,31 @@ public class FilmDbStorageImpl implements FilmStorage {
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), count);
     }
 
+    @Override
+    public List<Film> getPopularFilmListOfUserAndFriend(Long userId, Long friendId) {
+       String sql = "SELECT f.*, r.name AS rating_name, COUNT(ff.film_id) AS film_popularity\n" +
+               "FROM film f\n" +
+               "JOIN favorite_films ff ON f.id = ff.film_id\n" +
+               "JOIN rating r ON f.rating = r.id\n" +
+               "JOIN users u ON ff.user_id = u.id\n" +
+               "JOIN friendship s ON u.id = s.user_from OR u.id = s.user_to AND s.approved = TRUE\n" +
+               "WHERE (s.user_from = ? AND s.user_to = ?) OR (s.user_to = ? AND s.user_from = ?)\n" +
+               "GROUP BY f.id\n" +
+               "ORDER BY film_popularity DESC";
+
+//        String sql =
+//        "SELECT f.* , r.name AS rating_name\n" +
+//                "FROM film f\n" +
+//                "         LEFT JOIN favorite_films ff ON f.id = ff.film_id\n" +
+//                "         JOIN rating r ON f.rating = r.id\n" +
+//                "         JOIN users u ON ff.user_id = u.id\n" +
+//                "         JOIN friendship s ON s.user_from = ? AND s.user_to = ? AND s.approved = TRUE\n" +
+//                "GROUP BY f.id\n" +
+//                "ORDER BY count(ff.film_id) DESC\n";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), userId, friendId, friendId, userId);
+
+    }
+
     public void likeFilm(Long userId, Long filmId) {
         String sql = "INSERT INTO favorite_films(user_id, film_id)" +
                 "VALUES (?, ?)";

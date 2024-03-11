@@ -14,6 +14,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.impl.FilmDbStorageImpl;
 import ru.yandex.practicum.filmorate.storage.impl.UserDbStorageImpl;
 
+import java.io.LineNumberInputStream;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -93,7 +94,7 @@ public class FilmDbStorageImplTest {
 
         storage.save(getDefaultFilm());
         storage.save(getSecondFilm());
-        userDbStorage.save(new User(1L, "first@email.ru", "firstLogin", "firstName", LocalDate.parse("2000-01-01")));
+        userDbStorage.save(getDefaultUser());
         storage.likeFilm(1L, 2L);
 
         var expected = List.of(getSecondFilm(), getDefaultFilm());
@@ -104,6 +105,38 @@ public class FilmDbStorageImplTest {
                 .hasSize(expected.size())
                 .usingRecursiveComparison()
                 .isEqualTo(expected);
+    }
+
+    @Test
+    public void getPopularFilmListOfUserAndFriend() {
+        UserDbStorageImpl userDbStorage = new UserDbStorageImpl(jdbcTemplate);
+
+        userDbStorage.save(getDefaultUser());
+        userDbStorage.save(getDefaultSecondUser());
+        storage.save(getDefaultFilm());
+        storage.save(getSecondFilm());
+        storage.likeFilm(1L, 1L);
+        storage.likeFilm(2L, 2L);
+        storage.likeFilm(1L, 2L);
+        userDbStorage.addFriendship(1L, 2L);
+
+        var expected = List.of(getSecondFilm(), getDefaultFilm());
+        var result = storage.getPopularFilmListOfUserAndFriend(1L, 2L);
+
+        assertThat(result)
+                .isNotNull()
+                .hasSize(expected.size())
+                .usingRecursiveComparison()
+                .isEqualTo(expected);
+
+    }
+
+    private User getDefaultUser() {
+        return new User(1L, "first@email.ru", "firstLogin", "firstName", LocalDate.parse("2000-01-01"));
+    }
+
+    private User getDefaultSecondUser() {
+        return new User(2L, "second@email.ru", "secondLogin", "secondName", LocalDate.parse("2005-09-14"));
     }
 
     private Film getDefaultFilm() {

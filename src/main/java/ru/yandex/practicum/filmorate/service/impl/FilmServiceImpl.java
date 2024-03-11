@@ -72,6 +72,11 @@ public class FilmServiceImpl implements FilmService {
         return filmStorage.getFilmById(id);
     }
 
+    @Override
+    public List<Film> getPopularFilmListOfUserAndFriend(Long userId, Long friendId) {
+        return filmStorage.getPopularFilmListOfUserAndFriend(userId, friendId);
+    }
+
     private void validateFilm(@Valid Film film) {
         if (film.getReleaseDate().isBefore(FILM_RELEASE_DATE)) {
             ValidationException e = new ValidationException("Дата релиза (releaseDate) не может быть раньше 28.12.1895");
