@@ -10,14 +10,16 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
-import org.springframework.web.bind.annotation.*;
 
+import ru.yandex.practicum.filmorate.service.impl.EventServiceImpl;
 import ru.yandex.practicum.filmorate.service.impl.UserServiceImpl;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @RestController
@@ -25,9 +27,11 @@ import java.util.List;
 @Slf4j
 public class UserController {
     private final UserServiceImpl userServiceImpl;
+    private final EventServiceImpl eventService;
 
-    public UserController(UserServiceImpl userServiceImpl) {
+    public UserController(UserServiceImpl userServiceImpl, EventServiceImpl eventService) {
         this.userServiceImpl = userServiceImpl;
+        this.eventService = eventService;
     }
 
 
@@ -80,6 +84,12 @@ public class UserController {
     @DeleteMapping("/{userId}")
     public void removeUserById(@PathVariable Long userId) {
         userServiceImpl.remove(userId);
+    }
+
+    @GetMapping("/{userId}/feed")
+    public List<Event> getUserFeed(@NotNull @PathVariable Long userId) {
+
+        return eventService.getEventsByUserId(userId);
     }
 
 }

@@ -4,9 +4,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import ru.yandex.practicum.filmorate.error.ValidationException;
+import ru.yandex.practicum.filmorate.model.Event;
+import ru.yandex.practicum.filmorate.model.EventOperation;
+import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
+
+import ru.yandex.practicum.filmorate.storage.impl.EventDbStorage;
 import ru.yandex.practicum.filmorate.storage.DirectorStorage;
+
 import ru.yandex.practicum.filmorate.storage.impl.FilmDbStorageImpl;
 import ru.yandex.practicum.filmorate.storage.impl.UserDbStorageImpl;
 import ru.yandex.practicum.filmorate.utils.FilmIdGenerator;
@@ -24,14 +30,16 @@ public class FilmServiceImpl implements FilmService {
     private final FilmDbStorageImpl filmStorage;
     private final UserDbStorageImpl userStorage;
     private final DirectorStorage directorStorage;
+    private final EventDbStorage eventStorage;
 
-
-    public FilmServiceImpl(FilmDbStorageImpl filmStorage, UserDbStorageImpl userStorage,
-                           DirectorStorage directorStorage) {
+    public FilmServiceImpl(FilmDbStorageImpl filmStorage, UserDbStorageImpl userStorage, DirectorStorage directorStorage,
+                           EventDbStorage eventStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
         this.directorStorage = directorStorage;
+        this.eventStorage = eventStorage;
     }
+
 
     @Override
     public List<Film> getAll() {
@@ -63,6 +71,7 @@ public class FilmServiceImpl implements FilmService {
         userStorage.getUserById(userId);
         filmStorage.getFilmById(id);
         filmStorage.likeFilm(userId, id);
+        eventStorage.addEvent(new Event(userId, EventType.LIKE, EventOperation.ADD, id));
     }
 
     @Override
@@ -70,6 +79,7 @@ public class FilmServiceImpl implements FilmService {
         userStorage.getUserById(userId);
         filmStorage.getFilmById(id);
         filmStorage.dislikeFilm(userId, id);
+        eventStorage.addEvent(new Event(userId, EventType.LIKE, EventOperation.REMOVE, id));
     }
 
     @Override
