@@ -74,7 +74,10 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public List<Film> getPopularFilmListOfUserAndFriend(Long userId, Long friendId) {
-        return filmStorage.getPopularFilmListOfUserAndFriend(userId, friendId);
+       List<Film> first = filmStorage.getFilmsByUser(userId);
+       List<Film> second = filmStorage.getFilmsByUser(friendId);
+       first.retainAll(second);
+       return first;
     }
 
     private void validateFilm(@Valid Film film) {

@@ -120,8 +120,8 @@ public class FilmDbStorageImplTest {
         storage.likeFilm(1L, 2L);
         userDbStorage.addFriendship(1L, 2L);
 
-        var expected = List.of(getSecondFilm(), getDefaultFilm());
-        var result = storage.getPopularFilmListOfUserAndFriend(1L, 2L);
+        var expected = List.of(getDefaultFilm(), getSecondFilm());
+        var result = storage.getFilmsByUser(1L);
 
         assertThat(result)
                 .isNotNull()

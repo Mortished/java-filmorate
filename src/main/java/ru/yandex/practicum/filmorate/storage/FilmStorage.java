@@ -15,5 +15,5 @@ public interface FilmStorage {
 
     List<Film> getPopularFilms(Long count);
 
-    List<Film> getPopularFilmListOfUserAndFriend(Long userId, Long friendId);
+    List<Film> getFilmsByUser(Long userId);
 }

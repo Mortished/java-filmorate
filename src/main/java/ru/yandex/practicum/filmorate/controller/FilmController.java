@@ -62,7 +62,7 @@ public class FilmController {
         return filmServiceImpl.getFilmById(id);
     }
 
-    @GetMapping("/common?userId={userId}&friendId={friendId}")
+    @GetMapping("/common")
     public List<Film> getPopularFilmListOfUserAndFriend(@RequestParam(name = "userId") Long userId, @RequestParam(name = "friendId") Long friendId) {
         return filmServiceImpl.getPopularFilmListOfUserAndFriend(userId, friendId);
     }
