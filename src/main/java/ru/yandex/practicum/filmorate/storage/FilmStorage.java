@@ -11,9 +11,13 @@ public interface FilmStorage {
 
     Film update(Film film);
 
+    void removeFilmById(Long id);
+
     Film getFilmById(Long id);
 
-    List<Film> getPopularFilms(Long count);
+    List<Film> getPopularFilms(Long count, Long genreId, Integer year);
+
+    List<Film> getRecommendations(Long userId);
 
     List<Film> getFilmsByUser(Long userId);
 }

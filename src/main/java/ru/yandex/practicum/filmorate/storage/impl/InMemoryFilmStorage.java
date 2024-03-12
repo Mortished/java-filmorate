@@ -35,6 +35,10 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
+    public void removeFilmById(Long id) {
+    }
+
+    @Override
     public Film getFilmById(Long id) {
         Film result = filmStorage.get(id);
         if (result == null) {
@@ -43,8 +47,13 @@ public class InMemoryFilmStorage implements FilmStorage {
         return result;
     }
 
-    public List<Film> getPopularFilms(Long count) {
+    public List<Film> getPopularFilms(Long count, Long genreId, Integer year) {
         return Collections.emptyList();
+    }
+
+    @Override
+    public List<Film> getRecommendations(Long userId) {
+        return null;
     }
 
     @Override
