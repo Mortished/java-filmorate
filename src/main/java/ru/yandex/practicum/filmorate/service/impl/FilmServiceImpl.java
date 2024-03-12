@@ -9,10 +9,8 @@ import ru.yandex.practicum.filmorate.model.EventOperation;
 import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
-
-import ru.yandex.practicum.filmorate.storage.impl.EventDbStorage;
 import ru.yandex.practicum.filmorate.storage.DirectorStorage;
-
+import ru.yandex.practicum.filmorate.storage.impl.EventDbStorage;
 import ru.yandex.practicum.filmorate.storage.impl.FilmDbStorageImpl;
 import ru.yandex.practicum.filmorate.storage.impl.UserDbStorageImpl;
 import ru.yandex.practicum.filmorate.utils.FilmIdGenerator;
@@ -95,6 +93,11 @@ public class FilmServiceImpl implements FilmService {
     @Override
     public List<Film> getDirectorFilms(long directorId, String sortBy) {
         return directorStorage.getDirectorFilms(directorId, sortBy);
+    }
+
+    @Override
+    public List<Film> search(String query, String by) {
+        return filmStorage.search(query, by);
     }
 
     @Override

@@ -185,6 +185,59 @@ public class FilmDbStorageImplTest {
                 .isEqualTo(List.of(getSecondFilm()));
     }
 
+    @Test
+    void emptySearch() {
+        storage.save(getDefaultFilm());
+        storage.save(getSecondFilm());
+        var result = storage.search("test", "director");
+
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void searchByTitle() {
+        storage.save(getDefaultFilm());
+        var expected = List.of(storage.save(getSecondFilm()));
+
+        var result = storage.search("second", "title");
+
+        assertThat(result)
+                .isNotNull()
+                .hasSize(1)
+                .usingRecursiveComparison()
+                .isEqualTo(expected);
+    }
+
+    @Test
+    void searchByDirector() {
+        Film first = storage.save(getDefaultFilm());
+        Film second = storage.save(getSecondFilm());
+        var expected = List.of(first, second);
+
+        var result = storage.search("DiR", "director");
+
+        assertThat(result)
+                .isNotNull()
+                .hasSize(expected.size())
+                .usingRecursiveComparison()
+                .isEqualTo(expected);
+    }
+
+    @Test
+    void searchByDirectorAndTitle() {
+        Film first = storage.save(getDefaultFilm());
+        storage.save(getSecondFilm());
+        var expected = List.of(first);
+
+        var result = storage.search("fiRst", "title,director");
+
+        assertThat(result)
+                .isNotNull()
+                .hasSize(expected.size())
+                .usingRecursiveComparison()
+                .isEqualTo(expected);
+    }
+
     private Film getDefaultFilm() {
         return new Film(1L, "firstFilm", "firstDescription", LocalDate.parse("2000-12-12"),
                 122L, getDefaultMpa(), List.of(getDefaultGenre()), List.of(getDefaultDirector()));
