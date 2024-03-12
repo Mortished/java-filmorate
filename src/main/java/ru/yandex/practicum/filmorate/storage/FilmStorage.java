@@ -18,4 +18,6 @@ public interface FilmStorage {
     List<Film> getPopularFilms(Long count, Long genreId, Integer year);
 
     List<Film> getRecommendations(Long userId);
+
+    List<Film> search(String query, String by);
 }

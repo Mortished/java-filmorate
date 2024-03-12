@@ -6,8 +6,10 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.error.NotExistException;
+import ru.yandex.practicum.filmorate.error.ValidationException;
 import ru.yandex.practicum.filmorate.model.Catalog;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.SearchParam;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 import java.sql.Date;
@@ -15,7 +17,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Component
 @Primary
@@ -166,6 +171,39 @@ public class FilmDbStorageImpl implements FilmStorage {
         return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs), userId, userId, userId);
     }
 
+    @Override
+    public List<Film> search(String query, String by) {
+        List<SearchParam> searchParams = getSearchParams(by);
+
+        String sql = "SELECT f.*," +
+                "       r.name as rating_name" +
+                " FROM film f" +
+                "         LEFT JOIN rating r on f.rating = r.id" +
+                "         LEFT JOIN FAVORITE_FILMS ff on f.ID = ff.FILM_ID";
+        StringBuilder sqlBuilder = new StringBuilder(sql);
+
+        if (searchParams.isEmpty()) throw new ValidationException("Отсутствуют параметры сортировки");
+
+        if (searchParams.contains(SearchParam.DIRECTOR) && searchParams.contains(SearchParam.TITLE)) {
+            sqlBuilder.append(String.format(" WHERE lower(f.NAME) like lower ('%%%s%%')" +
+                    "  OR f.id in (" +
+                    "    SELECT film_id" +
+                    "    FROM FILM_DIRECTORS" +
+                    "    WHERE DIRECTOR_ID in (SELECT id from DIRECTORS WHERE lower(NAME) like lower ('%%%s%%')))", query, query));
+        } else {
+            if (searchParams.contains(SearchParam.DIRECTOR)) {
+                sqlBuilder.append(String.format(" WHERE f.id in (" +
+                        "    SELECT film_id" +
+                        "    FROM FILM_DIRECTORS" +
+                        "    WHERE DIRECTOR_ID in (SELECT id from DIRECTORS WHERE lower(NAME) like lower ('%%%s%%')))", query));
+            } else {
+                sqlBuilder.append(String.format(" WHERE lower(f.NAME) like lower ('%%%s%%')", query));
+            }
+        }
+        sqlBuilder.append(" GROUP BY f.id ORDER BY count(ff.film_id) DESC");
+        return jdbcTemplate.query(sqlBuilder.toString(), (rs, rowNum) -> makeFilm(rs));
+    }
+
     public void likeFilm(Long userId, Long filmId) {
         String sql = "INSERT INTO favorite_films(user_id, film_id)" +
                 "VALUES (?, ?)";
@@ -227,6 +265,14 @@ public class FilmDbStorageImpl implements FilmStorage {
                 rs.getLong("id"),
                 rs.getString("name")
         );
+    }
+
+    private List<SearchParam> getSearchParams(String by) {
+        return Arrays.stream(by.split(","))
+                .distinct()
+                .map(SearchParam::getParam)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
 }
