@@ -204,6 +204,17 @@ public class FilmDbStorageImpl implements FilmStorage {
         return jdbcTemplate.query(sqlBuilder.toString(), (rs, rowNum) -> makeFilm(rs));
     }
 
+
+    @Override
+    public List<Film> getFilmsByUser(Long userId) {
+        String sql = "SELECT f.*, r.name AS rating_name\n" +
+                "from FILM f\n" +
+                "JOIN RATING R on f.RATING = R.ID\n" +
+                "JOIN FAVORITE_FILMS ff on f.ID = ff.FILM_ID\n" +
+                "WHERE USER_ID = ?";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), userId);
+    }
+
     public void likeFilm(Long userId, Long filmId) {
         String sql = "INSERT INTO favorite_films(user_id, film_id)" +
                 "VALUES (?, ?)";

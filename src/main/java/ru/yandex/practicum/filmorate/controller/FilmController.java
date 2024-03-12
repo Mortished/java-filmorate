@@ -81,4 +81,9 @@ public class FilmController {
                                 @NotEmpty @RequestParam String by) {
         return filmServiceImpl.search(query, by);
     }
+
+    @GetMapping("/common")
+    public List<Film> getPopularFilmListOfUserAndFriend(@RequestParam(name = "userId") Long userId, @RequestParam(name = "friendId") Long friendId) {
+        return filmServiceImpl.getPopularFilmListOfUserAndFriend(userId, friendId);
+    }
 }
