@@ -132,14 +132,14 @@ public class FilmDbStorageImplTest {
 
         userDbStorage.save(getDefaultUser());
         userDbStorage.save(getDefaultSecondUser());
-        storage.save(getDefaultFilm());
-        storage.save(getSecondFilm());
+        Film savedFilm = storage.save(getDefaultFilm());
+        Film secondSavedFilm = storage.save(getSecondFilm());
         storage.likeFilm(1L, 1L);
         storage.likeFilm(2L, 2L);
         storage.likeFilm(1L, 2L);
         userDbStorage.addFriendship(1L, 2L);
 
-        var expected = List.of(getDefaultFilm(), getSecondFilm());
+        var expected = List.of(savedFilm, secondSavedFilm);
         var result = storage.getFilmsByUser(1L);
 
         assertThat(result)
