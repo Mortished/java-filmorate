@@ -127,6 +127,38 @@ public class FilmDbStorageImplTest {
     }
 
     @Test
+    public void getPopularFilmListOfUserAndFriend() {
+        UserDbStorageImpl userDbStorage = new UserDbStorageImpl(jdbcTemplate);
+
+        userDbStorage.save(getDefaultUser());
+        userDbStorage.save(getDefaultSecondUser());
+        Film savedFilm = storage.save(getDefaultFilm());
+        Film secondSavedFilm = storage.save(getSecondFilm());
+        storage.likeFilm(1L, 1L);
+        storage.likeFilm(2L, 2L);
+        storage.likeFilm(1L, 2L);
+        userDbStorage.addFriendship(1L, 2L);
+
+        var expected = List.of(savedFilm, secondSavedFilm);
+        var result = storage.getFilmsByUser(1L);
+
+        assertThat(result)
+                .isNotNull()
+                .hasSize(expected.size())
+                .usingRecursiveComparison()
+                .isEqualTo(expected);
+
+    }
+
+    private User getDefaultUser() {
+        return new User(1L, "first@email.ru", "firstLogin", "firstName", LocalDate.parse("2000-01-01"));
+    }
+
+    private User getDefaultSecondUser() {
+        return new User(2L, "second@email.ru", "secondLogin", "secondName", LocalDate.parse("2005-09-14"));
+    }
+
+    @Test
     void getRecommendations() {
 
         UserDbStorageImpl userStorage = new UserDbStorageImpl(jdbcTemplate);
