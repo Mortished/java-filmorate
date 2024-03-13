@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class ReviewServiceImplTest {
 
     @Autowired
-    ReviewServiceImpl reviewService;
+    private ReviewServiceImpl reviewService;
 
     @Test
     void validateContent() {

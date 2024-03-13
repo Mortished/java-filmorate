@@ -1,14 +1,19 @@
 package ru.yandex.practicum.filmorate.service.impl;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import ru.yandex.practicum.filmorate.error.ValidationException;
-import ru.yandex.practicum.filmorate.model.*;
+import ru.yandex.practicum.filmorate.model.Event;
+import ru.yandex.practicum.filmorate.model.EventOperation;
+import ru.yandex.practicum.filmorate.model.EventType;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 import ru.yandex.practicum.filmorate.storage.impl.EventDbStorage;
-import ru.yandex.practicum.filmorate.storage.impl.UserDbStorageImpl;
 import ru.yandex.practicum.filmorate.utils.UserIdGenerator;
 
 import javax.validation.Valid;
@@ -19,16 +24,12 @@ import static ru.yandex.practicum.filmorate.utils.DefaultData.ENTITY_PROCESSED_S
 @Service
 @Validated
 @Slf4j
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    private final UserDbStorageImpl userStorage;
+
+    private final UserStorage userStorage;
     private final FilmStorage filmStorage;
     private final EventDbStorage eventStorage;
-
-    public UserServiceImpl(UserDbStorageImpl userStorage, FilmStorage filmStorage, EventDbStorage eventStorage) {
-        this.userStorage = userStorage;
-        this.filmStorage = filmStorage;
-        this.eventStorage = eventStorage;
-    }
 
     @Override
     public List<User> getAll() {

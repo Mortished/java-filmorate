@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import ru.yandex.practicum.filmorate.model.Event;
@@ -17,20 +18,13 @@ import java.util.List;
 
 @Service
 @Validated
+@RequiredArgsConstructor
 public class ReviewServiceImpl implements ReviewService {
 
     private final ReviewStorage reviewStorage;
     private final UserService userService;
     private final FilmService filmService;
     private final EventDbStorage eventStorage;
-
-    public ReviewServiceImpl(ReviewStorage reviewStorage, UserService userService, FilmService filmService,
-                             EventDbStorage eventStorage) {
-        this.reviewStorage = reviewStorage;
-        this.userService = userService;
-        this.filmService = filmService;
-        this.eventStorage = eventStorage;
-    }
 
     @Override
     public Review create(@Valid Review review) {
@@ -66,7 +60,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public List<Review> getReviewList(Long filmId, Long count) {
-        if (filmId != -1L) {
+        if (filmId == null) {
             filmService.getFilmById(filmId);
         }
         return reviewStorage.getReviewList(filmId, count);

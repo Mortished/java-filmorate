@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service.impl;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -10,9 +11,9 @@ import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.storage.DirectorStorage;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 import ru.yandex.practicum.filmorate.storage.impl.EventDbStorage;
-import ru.yandex.practicum.filmorate.storage.impl.FilmDbStorageImpl;
-import ru.yandex.practicum.filmorate.storage.impl.UserDbStorageImpl;
 import ru.yandex.practicum.filmorate.utils.FilmIdGenerator;
 
 import javax.validation.Valid;
@@ -24,20 +25,13 @@ import static ru.yandex.practicum.filmorate.utils.DefaultData.FILM_RELEASE_DATE;
 @Service
 @Validated
 @Slf4j
+@RequiredArgsConstructor
 public class FilmServiceImpl implements FilmService {
-    private final FilmDbStorageImpl filmStorage;
-    private final UserDbStorageImpl userStorage;
+
+    private final FilmStorage filmStorage;
+    private final UserStorage userStorage;
     private final DirectorStorage directorStorage;
     private final EventDbStorage eventStorage;
-
-    public FilmServiceImpl(FilmDbStorageImpl filmStorage, UserDbStorageImpl userStorage, DirectorStorage directorStorage,
-                           EventDbStorage eventStorage) {
-        this.filmStorage = filmStorage;
-        this.userStorage = userStorage;
-        this.directorStorage = directorStorage;
-        this.eventStorage = eventStorage;
-    }
-
 
     @Override
     public List<Film> getAll() {
@@ -102,10 +96,10 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public List<Film> getPopularFilmListOfUserAndFriend(Long userId, Long friendId) {
-       List<Film> first = filmStorage.getFilmsByUser(userId);
-       List<Film> second = filmStorage.getFilmsByUser(friendId);
-       first.retainAll(second);
-       return first;
+        List<Film> first = filmStorage.getFilmsByUser(userId);
+        List<Film> second = filmStorage.getFilmsByUser(friendId);
+        first.retainAll(second);
+        return first;
     }
 
     private void validateFilm(@Valid Film film) {

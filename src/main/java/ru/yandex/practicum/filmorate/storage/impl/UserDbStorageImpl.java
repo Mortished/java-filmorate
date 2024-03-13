@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.impl;
 
-import org.springframework.context.annotation.Primary;
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.error.NotExistException;
@@ -12,13 +12,9 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Component
-@Primary
+@RequiredArgsConstructor
 public class UserDbStorageImpl implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
-
-    public UserDbStorageImpl(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @Override
     public List<User> getAll() {

@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.impl;
 
-import org.springframework.context.annotation.Primary;
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -23,13 +23,9 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
-@Primary
+@RequiredArgsConstructor
 public class FilmDbStorageImpl implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
-
-    public FilmDbStorageImpl(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @Override
     public List<Film> getAll() {

@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.error.NotExistException;
@@ -13,14 +14,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-
 @Component
+@RequiredArgsConstructor
 public class GenreDbStorageImpl implements GenreStorage {
     private final JdbcTemplate jdbcTemplate;
-
-    public GenreDbStorageImpl(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @Override
     public List<Catalog> getAll() {
@@ -41,18 +38,11 @@ public class GenreDbStorageImpl implements GenreStorage {
     @Override
     public List<Catalog> getGenres(Long filmID) {
 
-        Set<Catalog> genres = new HashSet<>(jdbcTemplate.query("SELECT g.id, g.name " +
-                "FROM film_genre AS fg " +
-                "LEFT OUTER JOIN genre AS g ON g.id = fg.genre_id " +
-                "WHERE fg.film_id = ? " +
-                "ORDER BY g.id", (rs, row) -> mapRow(rs), filmID));
+        Set<Catalog> genres = new HashSet<>(jdbcTemplate.query("SELECT g.id, g.name " + "FROM film_genre AS fg " + "LEFT OUTER JOIN genre AS g ON g.id = fg.genre_id " + "WHERE fg.film_id = ? " + "ORDER BY g.id", (rs, row) -> mapRow(rs), filmID));
         return new ArrayList<>(genres);
     }
 
     private Catalog mapRow(ResultSet rs) throws SQLException {
-        return new Catalog(
-                rs.getLong("id"),
-                rs.getString("name")
-        );
+        return new Catalog(rs.getLong("id"), rs.getString("name"));
     }
 }

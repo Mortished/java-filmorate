@@ -22,4 +22,10 @@ public interface FilmStorage {
     List<Film> search(String query, String by);
 
     List<Film> getFilmsByUser(Long userId);
+
+    void likeFilm(Long filmId, Long userId);
+
+    void dislikeFilm(Long filmId, Long userId);
+
+
 }
