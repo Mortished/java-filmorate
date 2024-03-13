@@ -60,7 +60,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public List<Review> getReviewList(Long filmId, Long count) {
-        if (filmId == null) {
+        if (filmId != null) {
             filmService.getFilmById(filmId);
         }
         return reviewStorage.getReviewList(filmId, count);

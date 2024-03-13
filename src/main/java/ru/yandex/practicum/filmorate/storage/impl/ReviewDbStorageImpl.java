@@ -76,7 +76,7 @@ public class ReviewDbStorageImpl implements ReviewStorage {
     @Override
     public List<Review> getReviewList(Long filmId, Long count) {
         String sql = "SELECT * FROM REVIEWS \n";
-        if (filmId != -1L) {
+        if (filmId != null) {
             sql += "WHERE film_id = ? \n" +
                     "ORDER BY USEFUL desc \n" +
                     "LIMIT ?";
