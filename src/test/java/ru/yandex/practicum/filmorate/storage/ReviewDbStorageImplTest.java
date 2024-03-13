@@ -96,7 +96,7 @@ public class ReviewDbStorageImplTest {
         var review = List.of(getDefaultReview());
         review.forEach(reviewDbStorage::create);
 
-        var result = reviewDbStorage.getReviewList(-1L, 1L);
+        var result = reviewDbStorage.getReviewList(null, 1L);
         assertThat(result)
                 .isNotNull()
                 .hasSize(1)
