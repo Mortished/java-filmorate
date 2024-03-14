@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -9,10 +10,16 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.yandex.practicum.filmorate.model.Event;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+
+
+import ru.yandex.practicum.filmorate.service.impl.EventServiceImpl;
 import ru.yandex.practicum.filmorate.service.impl.UserServiceImpl;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @RestController
@@ -20,9 +27,11 @@ import java.util.List;
 @Slf4j
 public class UserController {
     private final UserServiceImpl userServiceImpl;
+    private final EventServiceImpl eventService;
 
-    public UserController(UserServiceImpl userServiceImpl) {
+    public UserController(UserServiceImpl userServiceImpl, EventServiceImpl eventService) {
         this.userServiceImpl = userServiceImpl;
+        this.eventService = eventService;
     }
 
 
@@ -64,6 +73,23 @@ public class UserController {
     @GetMapping("/{id}")
     public User getUserById(@PathVariable Long id) {
         return userServiceImpl.getUserById(id);
+    }
+
+    @GetMapping("/{id}/recommendations")
+    public List<Film> getRecommendations(@PathVariable Long id) {
+
+        return userServiceImpl.getRecommendations(id);
+    }
+
+    @DeleteMapping("/{userId}")
+    public void removeUserById(@PathVariable Long userId) {
+        userServiceImpl.remove(userId);
+    }
+
+    @GetMapping("/{userId}/feed")
+    public List<Event> getUserFeed(@NotNull @PathVariable Long userId) {
+
+        return eventService.getEventsByUserId(userId);
     }
 
 }

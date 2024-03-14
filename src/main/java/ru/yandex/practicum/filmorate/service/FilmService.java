@@ -13,11 +13,19 @@ public interface FilmService {
 
     Film update(@Valid Film film);
 
+    void remove(Long id);
+
     void likeFilm(Long filmId, Long userId);
 
     void dislikeFilm(Long filmId, Long userId);
 
-    List<Film> getPopularFilms(Long count);
+    List<Film> getPopularFilms(Long count, Long genreId, Integer year);
 
     Film getFilmById(Long id);
+
+    List<Film> getDirectorFilms(long directorId, String sortBy);
+
+    List<Film> search(String query, String by);
+
+    List<Film> getPopularFilmListOfUserAndFriend(Long userId, Long friendId);
 }

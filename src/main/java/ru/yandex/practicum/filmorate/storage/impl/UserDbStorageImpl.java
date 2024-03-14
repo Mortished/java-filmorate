@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.impl;
 
-import org.springframework.context.annotation.Primary;
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.error.NotExistException;
@@ -12,13 +12,9 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Component
-@Primary
+@RequiredArgsConstructor
 public class UserDbStorageImpl implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
-
-    public UserDbStorageImpl(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @Override
     public List<User> getAll() {
@@ -58,6 +54,12 @@ public class UserDbStorageImpl implements UserStorage {
     }
 
     @Override
+    public void removeUserById(Long id) {
+        String sql = "DELETE FROM users WHERE id = ?";
+        jdbcTemplate.update(sql, id);
+    }
+
+    @Override
     public User getUserById(Long id) {
         String sql = "SELECT * FROM users WHERE id = ?;";
         var result = jdbcTemplate.query(sql, (rs, rowNum) -> makeUser(rs), id).stream().findFirst();
@@ -69,6 +71,7 @@ public class UserDbStorageImpl implements UserStorage {
 
     @Override
     public List<User> getUserFriends(Long id) {
+        getUserById(id);
         String sql = "SELECT *\n" +
                 "FROM users\n" +
                 "WHERE id IN (SELECT user_to FROM friendship WHERE user_from = ?);";
